@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>철학 자유게시판 - 화면 기획서 | 게시판 목록</title>
+<style>
+  :root {
+    --ink: #1c1f26;
+    --muted: #6b7280;
+    --line: #e4e7ec;
+    --panel: #ffffff;
+    --page: #f4f5f7;
+    --accent: #4f46e5;
+    --accent-soft: #eef0fd;
+    --accent-line: #c7cbf7;
+    --screen-bg: #eef1fd;
+    --spec-bg: #f7f7f9;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    line-height: 1.5;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+
+  .doc-header {
+    display: flex;
+    gap: 40px;
+    padding: 20px 40px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--line);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .doc-header .field { display: flex; flex-direction: column; gap: 2px; }
+  .doc-header .label { font-size: 11px; letter-spacing: .04em; color: var(--muted); text-transform: uppercase; }
+  .doc-header .value { font-size: 14px; font-weight: 600; }
+  .doc-header .value.path { font-family: "SFMono-Regular", Menlo, Consolas, monospace; color: var(--accent); font-weight: 500; }
+  .doc-header .field.title .value { font-size: 15px; }
+
+  /* ---------- two-column split shell ---------- */
+
+  html, body {
+    height: auto;
+    min-height: 100%;
+  }
+
+  .split {
+    display: flex;
+    align-items: stretch;
+  }
+
+  .column {
+    min-width: 0;
+    padding: 32px 40px 60px;
+  }
+
+  .column.screen { flex: 2.2 1 0; background: var(--screen-bg); }
+  .column.spec { flex: 1 1 0; background: var(--spec-bg); }
+
+  .divider {
+    flex: 0 0 auto;
+    width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(to right, var(--screen-bg), var(--spec-bg));
+    position: relative;
+  }
+
+  .divider::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    background: repeating-linear-gradient(to bottom, var(--ink) 0 6px, transparent 6px 12px);
+    opacity: .35;
+  }
+
+  .divider .divider-label {
+    position: relative;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    padding: 6px 4px;
+    border-radius: 999px;
+    writing-mode: vertical-rl;
+    box-shadow: 0 1px 2px rgba(16,24,40,.06);
+  }
+
+  .column-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .column-header .tag {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 7px;
+    color: #fff;
+  }
+
+  .column-header .tag.screen { background: var(--accent); }
+  .column-header .tag.spec { background: var(--ink); }
+
+  .column-header .desc { font-size: 12px; color: var(--muted); }
+
+  /* ---------- Left: wireframe (browser window chrome) ---------- */
+
+  .browser-window {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(16,24,40,.04);
+  }
+
+  .browser-titlebar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 16px;
+    background: #eceef1;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .traffic-lights {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .traffic-lights span {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);
+  }
+
+  .traffic-lights .close { background: #ff5f57; }
+  .traffic-lights .minimize { background: #febc2e; }
+  .traffic-lights .zoom { background: #28c840; }
+
+  .browser-address {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    padding: 5px 12px;
+    font-size: 12px;
+    color: var(--muted);
+    font-family: "SFMono-Regular", Menlo, Consolas, monospace;
+  }
+
+  .browser-address .lock { font-size: 10px; }
+
+  .wireframe-panel {
+    padding: 32px;
+  }
+
+  .wire-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 24px;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 3px;
+    border-radius: 999px;
+    background: rgba(79, 70, 229, .07);
+    border: 1.2px solid var(--accent);
+    color: var(--accent);
+    font-size: 9.5px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  /* annotation pin: floats beside a UI element without shifting its position */
+  .anno {
+    position: relative;
+  }
+
+  .badge-pin {
+    position: absolute;
+    top: -9px;
+    left: -9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 3px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1.2px solid var(--accent);
+    color: var(--accent);
+    font-size: 9.5px;
+    font-weight: 800;
+    box-shadow: 0 1px 3px rgba(16,24,40,.14);
+  }
+
+  .wire-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .date-field .cal { font-size: 12px; flex-shrink: 0; }
+
+  .wire-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #fafafb;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 8px 12px;
+  }
+
+  .wire-field.search-field { flex: 1 1 320px; }
+
+  .wire-select, .wire-input {
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    color: var(--ink);
+    outline: none;
+    width: 100%;
+  }
+
+  .wire-select { color: var(--muted); }
+
+  .wire-btn-search {
+    border: none;
+    background: var(--ink);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 7px;
+    white-space: nowrap;
+    cursor: default;
+  }
+
+  .wire-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  .wire-meta strong { color: var(--ink); }
+
+  .wire-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .wire-table th {
+    text-align: left;
+    font-weight: 600;
+    color: var(--muted);
+    padding: 10px 10px;
+    border-bottom: 2px solid var(--ink);
+    white-space: nowrap;
+  }
+
+  .wire-table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: middle;
+  }
+
+  .cat-pill {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-line);
+    border-radius: 999px;
+    padding: 2px 9px;
+    white-space: nowrap;
+  }
+
+  .post-title {
+    color: var(--ink);
+    max-width: 320px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .clip {
+    color: var(--muted);
+    margin-right: 4px;
+    font-size: 12px;
+  }
+
+  .col-author, .col-views { color: var(--muted); white-space: nowrap; }
+  .col-date { color: var(--muted); white-space: nowrap; font-size: 12px; }
+  .col-date .dash { color: #c6cad2; }
+
+  .wire-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+
+  .wire-pagination {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .page-nums {
+    display: flex;
+    gap: 4px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .page-nums span {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+  }
+
+  .page-nums span.current {
+    background: var(--ink);
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .wire-btn-primary {
+    border: none;
+    background: #ea580c;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 9px 20px;
+    border-radius: 8px;
+    cursor: default;
+  }
+
+  /* ---------- Right: spec table ---------- */
+
+  .spec-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .spec-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 22px 24px;
+    box-shadow: 0 1px 2px rgba(16,24,40,.04);
+  }
+
+  .spec-card h2 {
+    font-size: 13px;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 12px;
+  }
+
+  .spec-card p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--ink);
+  }
+
+  .spec-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .spec-table td {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+
+  .spec-table tr:last-child td { border-bottom: none; }
+
+  .spec-table td.num { width: 30px; }
+  .spec-table td.item {
+    width: 96px;
+    font-weight: 700;
+    color: var(--ink);
+    padding-right: 10px;
+    white-space: nowrap;
+  }
+
+  .spec-table td.desc ul {
+    margin: 0;
+    padding-left: 16px;
+    color: var(--muted);
+  }
+
+  .spec-table td.desc li { margin-bottom: 3px; }
+  .spec-table td.desc li:last-child { margin-bottom: 0; }
+
+  @media (max-width: 980px) {
+    .split { flex-direction: column; }
+    .divider { width: auto; height: 32px; }
+    .divider::before { left: 0; right: 0; top: 50%; bottom: auto; width: auto; height: 2px; }
+    .divider .divider-label { writing-mode: horizontal-tb; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="doc-header">
+    <div class="field title">
+      <span class="label">화면 명</span>
+      <span class="value">게시판 목록</span>
+    </div>
+    <div class="field">
+      <span class="label">화면 아이디</span>
+      <span class="value">board_free_list</span>
+    </div>
+    <div class="field">
+      <span class="label">화면 경로</span>
+      <span class="value path">/boards/free/list</span>
+    </div>
+  </div>
+
+  <div class="split">
+
+    <!-- 좌측: 화면 (와이어프레임) -->
+    <div class="column screen">
+      <div class="column-header">
+        <span class="tag screen">SCREEN</span>
+        <span class="desc">실제 화면이 어떻게 보이는지 보여주는 UI 와이어프레임</span>
+      </div>
+
+      <div class="browser-window">
+        <div class="browser-titlebar">
+          <div class="traffic-lights">
+            <span class="close"></span>
+            <span class="minimize"></span>
+            <span class="zoom"></span>
+          </div>
+          <div class="browser-address"><span class="lock">🔒</span>kamel-loewe-kind.com/boards/free/list</div>
+        </div>
+        <div class="wireframe-panel">
+        <p class="wire-title">철학 자유게시판 - 목록</p>
+
+        <div class="wire-toolbar">
+          <div class="wire-field date-field">
+            <span class="cal">📅</span>
+            <input class="wire-input" value="2025.07.03" disabled style="width:88px;flex:none;">
+            <span style="color:var(--muted);">~</span>
+            <span class="cal">📅</span>
+            <input class="wire-input" value="2026.07.03" disabled style="width:88px;flex:none;">
+          </div>
+          <div class="wire-field anno">
+            <span class="badge-pin">1</span>
+            <select class="wire-select" disabled>
+              <option>전체 카테고리</option>
+            </select>
+          </div>
+          <div class="wire-field search-field anno">
+            <span class="badge-pin">2</span>
+            <input class="wire-input" placeholder="검색어를 입력해 주세요 (제목+작성자+내용)" disabled>
+            <button class="wire-btn-search">검색</button>
+          </div>
+        </div>
+
+        <div class="wire-meta anno">
+          <span class="badge-pin">3</span>
+          총 <strong>218</strong>건
+        </div>
+
+        <table class="wire-table">
+          <thead>
+            <tr>
+              <th class="anno" style="width:36px"><span class="badge-pin" style="left:8px">4</span></th>
+              <th style="width:80px">카테고리</th>
+              <th class="anno"><span class="badge-pin">5</span>제목</th>
+              <th>작성자</th>
+              <th class="anno"><span class="badge-pin">6</span>조회수</th>
+              <th class="anno"><span class="badge-pin">7</span>등록/수정 일시</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="clip">📎</span></td>
+              <td><span class="cat-pill">윤리학</span></td>
+              <td><span class="post-title">칸트의 정언명령, 일상에 어떻게 적용할까</span></td>
+              <td class="col-author">소은</td>
+              <td class="col-views">42</td>
+              <td class="col-date">2026.06.18 09:12<br>2026.06.19 10:03</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td><span class="cat-pill">철학사</span></td>
+              <td><span class="post-title">니체의 영원회귀, 허무주의 극복의 열쇠인가</span></td>
+              <td class="col-author">재현</td>
+              <td class="col-views">31</td>
+              <td class="col-date">2026.06.20 14:27<br><span class="dash">-</span></td>
+            </tr>
+            <tr>
+              <td><span class="clip">📎</span></td>
+              <td><span class="cat-pill">인식론</span></td>
+              <td><span class="post-title">데카르트의 방법적 회의는 지금도 유효한가</span></td>
+              <td class="col-author">도현</td>
+              <td class="col-views">58</td>
+              <td class="col-date">2026.06.21 08:45<br>2026.06.21 11:20</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td><span class="cat-pill">정치철학</span></td>
+              <td><span class="post-title">롤스의 정의론, 오늘날 사회에 다시 묻는다</span></td>
+              <td class="col-author">하은</td>
+              <td class="col-views">19</td>
+              <td class="col-date">2026.06.22 16:03<br><span class="dash">-</span></td>
+            </tr>
+            <tr>
+              <td></td>
+              <td><span class="cat-pill">논리학</span></td>
+              <td><span class="post-title">논리적 오류를 일상 대화에서 발견하는 법</span></td>
+              <td class="col-author">지민</td>
+              <td class="col-views">27</td>
+              <td class="col-date">2026.06.23 19:40<br>2026.06.24 08:15</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="wire-footer">
+          <div class="wire-pagination anno">
+            <span class="badge-pin">8</span>
+            <span class="page-nums">
+              <span>‹</span>
+              <span class="current">1</span>
+              <span>2</span>
+              <span>3</span>
+              <span>4</span>
+              <span>5</span>
+              <span>›</span>
+            </span>
+          </div>
+          <button class="wire-btn-primary">등록</button>
+        </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"><span class="divider-label">화면 ↔ 기획서</span></div>
+
+    <!-- 우측: 기획서 (설명) -->
+    <div class="column spec">
+      <div class="column-header">
+        <span class="tag spec">SPEC</span>
+        <span class="desc">왼쪽 화면의 각 요소가 어떻게 동작하는지에 대한 설명</span>
+      </div>
+
+      <div class="spec-stack">
+        <div class="spec-card">
+          <h2>개요</h2>
+          <p>철학을 좋아하는 사람들이 자유롭게 철학 주제를 나누는 커뮤니티의 자유게시판 목록 조회 화면이다.</p>
+        </div>
+
+        <div class="spec-card">
+          <h2>화면 설명</h2>
+          <table class="spec-table">
+            <tbody>
+              <tr>
+                <td class="num"><span class="badge">1</span></td>
+                <td class="item">카테고리</td>
+                <td class="desc"><ul><li>카테고리는 DB에 저장되어 있음 (관리자 화면 없음)</li></ul></td>
+              </tr>
+              <tr>
+                <td class="num"><span class="badge">2</span></td>
+                <td class="item">검색</td>
+                <td class="desc"><ul>
+                  <li>제목 or 작성자 or 내용 텍스트 검색</li>
+                  <li>등록일 디폴트 최근 1년</li>
+                </ul></td>
+              </tr>
+              <tr>
+                <td class="num"><span class="badge">3</span></td>
+                <td class="item">건수</td>
+                <td class="desc"><ul><li>검색된 게시물 총 건수</li></ul></td>
+              </tr>
+              <tr>
+                <td class="num"><span class="badge">4</span></td>
+                <td class="item">첨부 표시</td>
+                <td class="desc"><ul><li>첨부파일이 있는 경우 아이콘 표시</li></ul></td>
+              </tr>
+              <tr>
+                <td class="num"><span class="badge">5</span></td>
+                <td class="item">제목</td>
+                <td class="desc"><ul><li>80자 넘는 경우 '…'로 줄여서 표시</li></ul></td>
+              </tr>
+              <tr>
+                <td class="num"><span class="badge">6</span></td>
+                <td class="item">조회수</td>
+                <td class="desc"><ul><li>'보기'에서 증가시켜 줌</li></ul></td>
+              </tr>
+              <tr>
+                <td class="num"><span class="badge">7</span></td>
+                <td class="item">등록/수정 일시</td>
+                <td class="desc"><ul>
+                  <li>최초 등록일시 표기</li>
+                  <li>최종 수정일시 표기</li>
+                  <li>수정한 이력이 없다면 '-'로 표기</li>
+                </ul></td>
+              </tr>
+              <tr>
+                <td class="num"><span class="badge">8</span></td>
+                <td class="item">페이지</td>
+                <td class="desc"><ul>
+                  <li>페이지 이동, 한 페이지에 10개씩 노출</li>
+                  <li>페이지 이동 시 검색조건 유지 (보기·쓰기·수정에서도 마찬가지)</li>
+                </ul></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

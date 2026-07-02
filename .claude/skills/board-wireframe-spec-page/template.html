@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>철학 자유게시판 - 화면 기획서 | {{화면 명}}</title>
+<style>
+  /* ============================================================
+     공유 디자인 시스템 — docs/board-list.html에서 그대로 복사함.
+     모든 게시판 와이어프레임+기획서 페이지를 한꺼번에 다시 스타일링할
+     의도가 아니라면 수정하지 말 것. 화면별 마크업은 아래쪽의
+     <!-- PAGE-SPECIFIC --> 두 구역에만 넣는다.
+     ============================================================ */
+  :root {
+    --ink: #1c1f26;
+    --muted: #6b7280;
+    --line: #e4e7ec;
+    --panel: #ffffff;
+    --page: #f4f5f7;
+    --accent: #4f46e5;
+    --accent-soft: #eef0fd;
+    --accent-line: #c7cbf7;
+    --screen-bg: #eef1fd;
+    --spec-bg: #f7f7f9;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    height: auto;
+    min-height: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    line-height: 1.5;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+
+  .doc-header {
+    display: flex;
+    gap: 40px;
+    padding: 20px 40px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--line);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .doc-header .field { display: flex; flex-direction: column; gap: 2px; }
+  .doc-header .label { font-size: 11px; letter-spacing: .04em; color: var(--muted); text-transform: uppercase; }
+  .doc-header .value { font-size: 14px; font-weight: 600; }
+  .doc-header .value.path { font-family: "SFMono-Regular", Menlo, Consolas, monospace; color: var(--accent); font-weight: 500; }
+  .doc-header .field.title .value { font-size: 15px; }
+
+  /* ---------- 좌우 2단 분할 뼈대 ---------- */
+
+  .split {
+    display: flex;
+    align-items: stretch;
+  }
+
+  .column {
+    min-width: 0;
+    padding: 32px 40px 60px;
+  }
+
+  .column.screen { flex: 2.2 1 0; background: var(--screen-bg); }
+  .column.spec { flex: 1 1 0; background: var(--spec-bg); }
+
+  .divider {
+    flex: 0 0 auto;
+    width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(to right, var(--screen-bg), var(--spec-bg));
+    position: relative;
+  }
+
+  .divider::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    background: repeating-linear-gradient(to bottom, var(--ink) 0 6px, transparent 6px 12px);
+    opacity: .35;
+  }
+
+  .divider .divider-label {
+    position: relative;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    padding: 6px 4px;
+    border-radius: 999px;
+    writing-mode: vertical-rl;
+    box-shadow: 0 1px 2px rgba(16,24,40,.06);
+  }
+
+  .column-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .column-header .tag {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 7px;
+    color: #fff;
+  }
+
+  .column-header .tag.screen { background: var(--accent); }
+  .column-header .tag.spec { background: var(--ink); }
+
+  .column-header .desc { font-size: 12px; color: var(--muted); }
+
+  /* ---------- 좌측: 와이어프레임 (브라우저 창 크롬) ---------- */
+
+  .browser-window {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(16,24,40,.04);
+  }
+
+  .browser-titlebar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 16px;
+    background: #eceef1;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .traffic-lights {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .traffic-lights span {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.08);
+  }
+
+  .traffic-lights .close { background: #ff5f57; }
+  .traffic-lights .minimize { background: #febc2e; }
+  .traffic-lights .zoom { background: #28c840; }
+
+  .browser-address {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    padding: 5px 12px;
+    font-size: 12px;
+    color: var(--muted);
+    font-family: "SFMono-Regular", Menlo, Consolas, monospace;
+  }
+
+  .browser-address .lock { font-size: 10px; }
+
+  .wireframe-panel {
+    padding: 32px;
+  }
+
+  .wire-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 24px;
+  }
+
+  /* 위치 지정 없는 일반 인라인 원 — SPEC 표 자체의 번호 열에서만 쓴다.
+     SCREEN 목업 안에서 (래핑 없이) 절대 쓰지 말 것: 라벨 텍스트를
+     원래 위치에서 밀어내게 된다. */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 3px;
+    border-radius: 999px;
+    background: rgba(79, 70, 229, .07);
+    border: 1.2px solid var(--accent);
+    color: var(--accent);
+    font-size: 9.5px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  /* 주석 핀: 요소를 밀어내지 않고 그 옆에 떠 있는다.
+     주석을 달 요소를 .anno로 감싸고, 그 첫 번째 자식으로 .badge-pin을
+     넣는다 — position:absolute가 흐름에서 빠지므로, 실제 요소
+     (select/input/text/th 라벨)는 실제 화면에서 렌더링될 자리 그대로
+     있고, 숫자만 그 위에 떠 있게 된다. */
+  .anno {
+    position: relative;
+  }
+
+  .badge-pin {
+    position: absolute;
+    top: -9px;
+    left: -9px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 3px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1.2px solid var(--accent);
+    color: var(--accent);
+    font-size: 9.5px;
+    font-weight: 800;
+    box-shadow: 0 1px 3px rgba(16,24,40,.14);
+  }
+
+  .wire-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #fafafb;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 8px 12px;
+  }
+
+  .wire-select, .wire-input, .wire-textarea {
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    color: var(--ink);
+    outline: none;
+    width: 100%;
+    font-family: inherit;
+  }
+
+  .wire-select { color: var(--muted); }
+
+  .wire-btn-search, .wire-btn-secondary {
+    border: none;
+    background: var(--ink);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 7px;
+    white-space: nowrap;
+    cursor: default;
+  }
+
+  .wire-btn-secondary {
+    background: #fff;
+    color: var(--ink);
+    border: 1px solid var(--line);
+  }
+
+  .wire-btn-primary {
+    border: none;
+    background: #ea580c;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 9px 20px;
+    border-radius: 8px;
+    cursor: default;
+  }
+
+  .wire-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .wire-table th {
+    text-align: left;
+    font-weight: 600;
+    color: var(--muted);
+    padding: 10px 10px;
+    border-bottom: 2px solid var(--ink);
+    white-space: nowrap;
+  }
+
+  .wire-table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: middle;
+  }
+
+  .cat-pill {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-line);
+    border-radius: 999px;
+    padding: 2px 9px;
+    white-space: nowrap;
+  }
+
+  /* ---------- 우측: 기획서 표 ---------- */
+
+  .spec-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .spec-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 22px 24px;
+    box-shadow: 0 1px 2px rgba(16,24,40,.04);
+  }
+
+  .spec-card h2 {
+    font-size: 13px;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 12px;
+  }
+
+  .spec-card p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--ink);
+  }
+
+  .spec-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .spec-table td {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+
+  .spec-table tr:last-child td { border-bottom: none; }
+
+  .spec-table td.num { width: 30px; }
+  .spec-table td.item {
+    width: 96px;
+    font-weight: 700;
+    color: var(--ink);
+    padding-right: 10px;
+    white-space: nowrap;
+  }
+
+  .spec-table td.desc ul {
+    margin: 0;
+    padding-left: 16px;
+    color: var(--muted);
+  }
+
+  .spec-table td.desc li { margin-bottom: 3px; }
+  .spec-table td.desc li:last-child { margin-bottom: 0; }
+
+  @media (max-width: 980px) {
+    .split { flex-direction: column; }
+    .divider { width: auto; height: 32px; }
+    .divider::before { left: 0; right: 0; top: 50%; bottom: auto; width: auto; height: 2px; }
+    .divider .divider-label { writing-mode: horizontal-tb; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="doc-header">
+    <div class="field title">
+      <span class="label">화면 명</span>
+      <span class="value">{{화면 명 — 예: 게시판 보기}}</span>
+    </div>
+    <div class="field">
+      <span class="label">화면 아이디</span>
+      <span class="value">{{screen_id — 예: board_free_view}}</span>
+    </div>
+    <div class="field">
+      <span class="label">화면 경로</span>
+      <span class="value path">{{/boards/free/view/{seq} 같은 PDF의 화면 경로}}</span>
+    </div>
+  </div>
+
+  <div class="split">
+
+    <!-- 좌측: 화면 (와이어프레임) -->
+    <div class="column screen">
+      <div class="column-header">
+        <span class="tag screen">SCREEN</span>
+        <span class="desc">실제 화면이 어떻게 보이는지 보여주는 UI 와이어프레임</span>
+      </div>
+
+      <div class="browser-window">
+        <div class="browser-titlebar">
+          <div class="traffic-lights">
+            <span class="close"></span>
+            <span class="minimize"></span>
+            <span class="zoom"></span>
+          </div>
+          <div class="browser-address"><span class="lock">🔒</span>kamel-loewe-kind.com{{화면 경로}}</div>
+        </div>
+        <div class="wireframe-panel">
+          <p class="wire-title">철학 자유게시판 - {{화면 명}}</p>
+
+          <!-- PAGE-SPECIFIC: 여기에 SCREEN 목업을 채운다.
+               주석이 달리는 모든 요소는 이 패턴을 따른다:
+
+               <div class="anno">
+                 <span class="badge-pin">N</span>
+                 ... 실제 요소 (input/select/text/table header) ...
+               </div>
+
+               주석이 필요 없는 구조적 요소(단순 라벨, 구분선)는
+               .anno가 필요 없다. 툴바/테이블/푸터 전체에 걸친 실제
+               예시는 docs/board-list.html 참고. -->
+
+          <div class="anno" style="margin-bottom: 14px;">
+            <span class="badge-pin">1</span>
+            <span>예시 필드 — 이 자리에 실제 화면 요소를 채워 넣으세요</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"><span class="divider-label">화면 ↔ 기획서</span></div>
+
+    <!-- 우측: 기획서 (설명) -->
+    <div class="column spec">
+      <div class="column-header">
+        <span class="tag spec">SPEC</span>
+        <span class="desc">왼쪽 화면의 각 요소가 어떻게 동작하는지에 대한 설명</span>
+      </div>
+
+      <div class="spec-stack">
+        <div class="spec-card">
+          <h2>개요</h2>
+          <p>{{이 화면이 무엇을 하는지 한두 문장 — 철학 자유게시판 커뮤니티 톤 유지}}</p>
+        </div>
+
+        <div class="spec-card">
+          <h2>화면 설명</h2>
+          <table class="spec-table">
+            <tbody>
+              <!-- PAGE-SPECIFIC: 왼쪽에서 쓴 badge-pin 번호 순서대로
+                   <tr> 하나씩. -->
+              <tr>
+                <td class="num"><span class="badge">1</span></td>
+                <td class="item">{{항목명}}</td>
+                <td class="desc"><ul><li>{{PDF의 화면 설명 불릿}}</li></ul></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
