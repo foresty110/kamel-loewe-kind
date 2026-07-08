@@ -1,5 +1,6 @@
 package com.kamel.board.controller;
 
+import com.kamel.board.dto.BoardDetailResponseDto;
 import com.kamel.board.dto.BoardListRequestDto;
 import com.kamel.board.dto.BoardListResponseDto;
 import com.kamel.board.dto.CategoryResponseDto;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
@@ -42,5 +44,20 @@ public class BoardController {
         model.addAttribute("categoryList", categoryList);
         model.addAttribute("boardList", boardList);
         return "board";
+    }
+
+    /**
+     * 게시글 상세 화면을 조회한다.
+     *
+     * @param seq   조회할 게시글 번호
+     * @param model 뷰로 전달할 데이터
+     * @return 게시판 상세 뷰 이름
+     */
+    @GetMapping("/board/{seq}")
+    public String getBoardDetail(@PathVariable Long seq, Model model) {
+
+        BoardDetailResponseDto boardDetail = BoardDetailResponseDto.from(boardService.getBoardDetail(seq));
+        model.addAttribute("boardDetail", boardDetail);
+        return "board-view";
     }
 }

@@ -52,4 +52,42 @@
 
     </select>
 
+    <select id="findById"
+            parameterType="Long"
+            resultType="Board">
+
+        SELECT
+            seq,
+            category_id AS categoryId,
+            author,
+            password,
+            title,
+            content,
+            view_count  AS viewCount,
+            created_at  AS createdAt,
+            updated_at  AS updatedAt
+        FROM board
+        WHERE seq = #{seq}
+
+    </select>
+
+    <select id="existsById"
+            parameterType="Long"
+            resultType="boolean">
+
+        SELECT EXISTS(
+            SELECT 1 FROM board WHERE seq = #{seq}
+            )
+
+    </select>
+
+    <update id="increaseViewCount"
+            parameterType="Long">
+
+        UPDATE board
+        SET view_count = view_count + 1
+        WHERE seq = #{seq}
+
+    </update>
+
 </mapper>

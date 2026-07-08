@@ -1,9 +1,11 @@
 package com.kamel.board.service;
 
 import com.kamel.board.dto.BoardListResponseDto;
+import com.kamel.board.entity.Board;
 import com.kamel.board.mapper.BoardMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,5 +25,25 @@ public class BoardService {
      */
     public List<BoardListResponseDto> search(BoardSearchCondition boardSearchCondition){
         return boardMapper.search(boardSearchCondition);
+    }
+
+    /**
+     * 게시글 상세 정보를 조회하고 조회수를 1 증가시킨다.
+     *
+     * @param seq 상세 조회할 게시글 번호
+     * @return 조회수가 반영된 게시글 정보
+     * @throws IllegalArgumentException 존재하지 않는 게시글 번호인 경우
+     */
+    @Transactional
+    public Board getBoardDetail(Long seq) {
+
+        // 존재하지 않는 게시글이면 예외 처리
+        if (!boardMapper.existsById(seq)) {
+            throw new IllegalArgumentException("게시글이 존재하지 않습니다.");
+        }
+        // 조회수 증가
+        boardMapper.increaseViewCount(seq);
+
+        return boardMapper.findById(seq);
     }
 }
