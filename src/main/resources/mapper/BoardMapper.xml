@@ -4,8 +4,52 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kamel.board.mapper.BoardMapper">
 
-    <select id="selectMysqlVersion" resultType="string">
-        SELECT VERSION()
+    <select id="search"
+            parameterType="BoardSearchCondition"
+            resultType="BoardListResponseDto">
+
+        SELECT
+            b.seq,
+            c.name          AS categoryName,
+            b.author,
+            b.title,
+            b.view_count    AS viewCount,
+            b.created_at    AS createdAt,
+            b.updated_at    AS updatedAt,
+            EXISTS(
+                SELECT 1
+                FROM attachment a
+                WHERE a.board_seq = b.seq
+                ) AS hasAttachment
+        FROM board b
+        INNER JOIN category c ON c.id = b.category_id
+
+        <where>
+
+            <if test="keyword != null and keyword != ''">
+                AND (
+                b.title   LIKE CONCAT('%', #{keyword}, '%')
+                OR b.content LIKE CONCAT('%', #{keyword}, '%')
+                OR b.author  LIKE CONCAT('%', #{keyword}, '%')
+                )
+            </if>
+
+            <if test="categoryId != null">
+                AND b.category_id = #{categoryId}
+            </if>
+
+            <if test="startDate != null">
+                AND b.created_at >= #{startDate}
+            </if>
+
+            <if test="endDate != null">
+                AND b.created_at &lt;= #{endDate}
+            </if>
+
+        </where>
+
+        ORDER BY b.created_at DESC
+
     </select>
 
 </mapper>
