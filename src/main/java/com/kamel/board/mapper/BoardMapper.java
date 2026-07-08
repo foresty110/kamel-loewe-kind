@@ -6,7 +6,6 @@ import com.kamel.board.service.BoardSearchCondition;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * 게시글 관련 MyBatis 매퍼
@@ -44,4 +43,11 @@ public interface BoardMapper {
      * @param seq 조회수를 증가시킬 게시글 번호
      */
     void increaseViewCount(Long seq);
+
+    /**
+     * 게시글 정보를 수정한다.
+     *
+     * @param board 수정할 값이 채워진 게시글 정보
+     */
+    void update(Board board);
 }

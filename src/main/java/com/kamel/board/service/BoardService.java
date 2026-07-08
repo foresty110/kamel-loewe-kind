@@ -1,12 +1,14 @@
 package com.kamel.board.service;
 
 import com.kamel.board.dto.BoardListResponseDto;
+import com.kamel.board.dto.BoardUpdateRequestDto;
 import com.kamel.board.entity.Board;
 import com.kamel.board.mapper.BoardMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -35,7 +37,7 @@ public class BoardService {
      * @throws IllegalArgumentException 존재하지 않는 게시글 번호인 경우
      */
     @Transactional
-    public Board getBoardDetail(Long seq) {
+    public Board getDetail(Long seq) {
 
         // 존재하지 않는 게시글이면 예외 처리
         if (!boardMapper.existsById(seq)) {
@@ -45,5 +47,46 @@ public class BoardService {
         boardMapper.increaseViewCount(seq);
 
         return boardMapper.findById(seq);
+    }
+
+    /**
+     * 수정 대상 게시글의 정보를 가져온다.
+     *
+     * @param seq 수정 대상 게시글 번호
+     * @return 수정 대상 게시글 정보
+     * @throws IllegalArgumentException 존재하지 않는 게시글 번호인 경우
+     */
+    public Board edit(Long seq) {
+        // 존재하지 않는 게시글이면 예외 처리
+        if (!boardMapper.existsById(seq)) {
+            throw new IllegalArgumentException("게시글이 존재하지 않습니다.");
+        }
+        return boardMapper.findById(seq);
+    }
+
+    /**
+     * 게시글을 수정한다.
+     *
+     * @param seq 수정 대상 게시글 번호
+     * @return 수정 대상 게시글 정보
+     * @throws IllegalArgumentException 존재하지 않는 게시글 번호인 경우
+     */
+    @Transactional
+    public Board update(Long seq, Board board) {
+        // 존재하지 않는 게시글이면 예외 처리
+        if (!boardMapper.existsById(seq)) {
+            throw new IllegalArgumentException("게시글이 존재하지 않습니다.");
+        }
+        Board befBoard = boardMapper.findById(seq);
+
+        befBoard.update(
+                board.getCategoryId(),
+                board.getTitle(),
+                board.getContent(),
+                LocalDateTime.now());
+
+        boardMapper.update(befBoard);
+
+        return befBoard;
     }
 }

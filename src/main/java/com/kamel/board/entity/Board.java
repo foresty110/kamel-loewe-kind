@@ -1,5 +1,6 @@
 package com.kamel.board.entity;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
  */
 @Getter
 @Setter
+@Builder
 public class Board {
 
     private Long seq; // 게시글 번호
@@ -21,4 +23,11 @@ public class Board {
     private int viewCount; // 조회수
     private LocalDateTime createdAt; // 등록일시
     private LocalDateTime updatedAt; // 수정일시
+
+    public void update(Long categoryId, String title, String content, LocalDateTime updatedAt) {
+        this.categoryId = categoryId;
+        this.title = title;
+        this.content = content;
+        this.updatedAt = updatedAt;
+    }
 }

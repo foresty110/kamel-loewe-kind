@@ -1,16 +1,16 @@
 package com.kamel.board.controller;
 
-import com.kamel.board.dto.BoardDetailResponseDto;
-import com.kamel.board.dto.BoardListRequestDto;
-import com.kamel.board.dto.BoardListResponseDto;
-import com.kamel.board.dto.CategoryResponseDto;
+import com.kamel.board.dto.*;
+import com.kamel.board.entity.Board;
 import com.kamel.board.service.BoardService;
 import com.kamel.board.service.CategoryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
@@ -33,7 +33,7 @@ public class BoardController {
      * @return 게시판 목록 뷰 이름
      */
     @GetMapping("/board")
-    public String getBoardList(@RequestBody BoardListRequestDto requestDto, Model model) {
+    public String getList(@RequestBody BoardListRequestDto requestDto, Model model) {
 
         List<CategoryResponseDto> categoryList = categoryService.getAllCateogry().stream()
                 .map(CategoryResponseDto::from)
@@ -54,10 +54,42 @@ public class BoardController {
      * @return 게시판 상세 뷰 이름
      */
     @GetMapping("/board/{seq}")
-    public String getBoardDetail(@PathVariable Long seq, Model model) {
+    public String getDetail(@PathVariable Long seq, Model model) {
 
-        BoardDetailResponseDto boardDetail = BoardDetailResponseDto.from(boardService.getBoardDetail(seq));
+        BoardDetailResponseDto boardDetail = BoardDetailResponseDto.from(boardService.getDetail(seq));
         model.addAttribute("boardDetail", boardDetail);
+        return "board-view";
+    }
+
+    /**
+     * 게시글 수정 화면을 조회한다.
+     *
+     * @param seq   수정할 게시글 번호
+     * @param model 뷰로 전달할 데이터
+     * @return 게시판 상세 뷰 이름
+     */
+    @GetMapping("/board/{seq}/edit")
+    public String edit(@PathVariable Long seq, Model model) {
+
+        BoardEditResponseDto responseDto = BoardEditResponseDto.from(boardService.edit(seq));
+        model.addAttribute("boardDetail", responseDto);
+        return "board-edit";
+    }
+
+    /**
+     * 게시글을 수정 요청한다.
+     *
+     * @param seq   수정할 게시글 번호
+     * @param model 뷰로 전달할 데이터
+     * @return 게시판 상세 뷰 이름
+     */
+    @PutMapping("/board/{seq}")
+    public String update(@PathVariable Long seq, @Valid @RequestBody BoardUpdateRequestDto requestDto, Model model) {
+
+        Board board = boardService.update(seq,requestDto.toEntity());
+        BoardUpdateResponseDto responseDto = BoardUpdateResponseDto.from(board);
+
+        model.addAttribute("boardDetail", responseDto);
         return "board-view";
     }
 }

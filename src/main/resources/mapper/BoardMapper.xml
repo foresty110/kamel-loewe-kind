@@ -90,4 +90,16 @@
 
     </update>
 
+    <update id="update"
+            parameterType="Board">
+
+        UPDATE board
+        SET category_id = #{categoryId},
+            title        = #{title},
+            content      = #{content},
+            updated_at   = #{updatedAt}
+        WHERE seq = #{seq}
+
+    </update>
+
 </mapper>
