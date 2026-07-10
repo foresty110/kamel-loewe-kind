@@ -1,0 +1,52 @@
+name: Deploy to Cloud Run
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  PROJECT_ID: kamel-loewe-kind
+  REGION: asia-southeast1
+  SERVICE: kamel-loewe-kind
+  IMAGE: asia-southeast1-docker.pkg.dev/kamel-loewe-kind/kamel-loewe-kind/app
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/764986603360/locations/global/workloadIdentityPools/github-actions-pool/providers/github-provider
+          service_account: github-actions-deployer@kamel-loewe-kind.iam.gserviceaccount.com
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker asia-southeast1-docker.pkg.dev --quiet
+
+      - name: Build image
+        run: docker build --platform=linux/amd64 -t ${{ env.IMAGE }}:${{ github.sha }} -t ${{ env.IMAGE }}:latest .
+
+      - name: Push image
+        run: |
+          docker push ${{ env.IMAGE }}:${{ github.sha }}
+          docker push ${{ env.IMAGE }}:latest
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy ${{ env.SERVICE }} \
+            --image=${{ env.IMAGE }}:${{ github.sha }} \
+            --region=${{ env.REGION }} \
+            --platform=managed \
+            --allow-unauthenticated \
+            --set-secrets=SPRING_DATASOURCE_URL=spring-datasource-url:latest,SPRING_DATASOURCE_USERNAME=spring-datasource-username:latest,SPRING_DATASOURCE_PASSWORD=spring-datasource-password:latest \
+            --project=${{ env.PROJECT_ID }}

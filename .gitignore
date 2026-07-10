@@ -32,3 +32,6 @@ bin/
 ### Secrets ###
 .env
 .env.*
+
+### Claude Code ###
+.claude/
