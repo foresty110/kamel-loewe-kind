@@ -50,4 +50,11 @@ public interface BoardMapper {
      * @param board 수정할 값이 채워진 게시글 정보
      */
     void update(Board board);
+
+    /**
+     * 게시글 한개를 삭제한다.
+     *
+     * @param seq 삭제할 게시글 번호
+     */
+    int delete(Long seq);
 }

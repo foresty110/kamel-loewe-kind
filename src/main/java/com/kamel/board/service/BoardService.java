@@ -89,4 +89,24 @@ public class BoardService {
 
         return befBoard;
     }
+
+    /**
+     * 게시글을 삭제한다.
+     *
+     * @param seq 수정 대상 게시글 번호
+     * @return 삭제 대상 게시글 정보
+     * @throws IllegalArgumentException 존재하지 않는 게시글 번호인 경우
+     */
+    public Board delete(Long seq) {
+        // 존재하지 않는 게시글이면 예외 처리
+        if (!boardMapper.existsById(seq)) {
+            throw new IllegalArgumentException("게시글이 존재하지 않습니다.");
+        }
+
+        Board deleteBoard = boardMapper.findById(seq);
+
+        boardMapper.delete(seq);
+
+        return deleteBoard;
+    }
 }

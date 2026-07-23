@@ -102,4 +102,10 @@
 
     </update>
 
+    <delete id="delete" parameterType="Long">
+        DELETE
+        FROM board
+        WHERE seq = #{seq}
+    </delete>
+
 </mapper>

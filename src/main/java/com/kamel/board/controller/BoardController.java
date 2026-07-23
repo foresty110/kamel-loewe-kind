@@ -8,10 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -91,5 +88,22 @@ public class BoardController {
 
         model.addAttribute("boardDetail", responseDto);
         return "board-view";
+    }
+
+    /**
+     * 게시글 삭제를 요청한다.
+     *
+     * @param seq   수정할 게시글 번호
+     * @param model 뷰로 전달할 데이터
+     * @return 게시판 목록 뷰 이름
+     */
+    @DeleteMapping("/board/{seq}")
+    public String delete(@PathVariable Long seq,Model model){
+
+        Board board = boardService.delete(seq);
+        BoardDeleteResponseDto responseDto = BoardDeleteResponseDto.from(board);
+
+        model.addAttribute("boardDetail", responseDto);
+        return "board-list";
     }
 }
