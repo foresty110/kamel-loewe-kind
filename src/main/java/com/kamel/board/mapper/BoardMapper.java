@@ -13,6 +13,14 @@ import java.util.List;
 @Mapper
 public interface BoardMapper {
 
+
+    /**
+     * 게시글을 생성한다.
+     *
+     * @param board 생성할 게시글 정보
+     */
+    void insert(Board board);
+
     /**
      * 검색 조건과 일치하는 게시글 목록을 조회한다.
      *

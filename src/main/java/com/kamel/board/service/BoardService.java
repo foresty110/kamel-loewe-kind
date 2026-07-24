@@ -1,10 +1,11 @@
 package com.kamel.board.service;
 
 import com.kamel.board.dto.BoardListResponseDto;
-import com.kamel.board.dto.BoardUpdateRequestDto;
 import com.kamel.board.entity.Board;
 import com.kamel.board.mapper.BoardMapper;
+import com.kamel.board.mapper.CategoryMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +19,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardMapper boardMapper; // 게시글 매퍼
-
+    private final CategoryMapper categoryMapper; // 카테고리 매퍼
+    private final PasswordEncoder passwordEncoder; // 비밀번호 암호화
     /**
      * 검색 조건에 맞는 게시글 목록을 조회한다.
      *
@@ -47,6 +49,28 @@ public class BoardService {
         boardMapper.increaseViewCount(seq);
 
         return boardMapper.findById(seq);
+    }
+
+    /**
+     * 전달받은 정보로 게시글을 생성한다.
+     *
+     * @param board 생성할 게시글 정보
+     * @return 생성한 게시글
+     * @throws IllegalArgumentException 존재하지 않는 카테고리 번호인 경우
+     */
+    public Board create(Board board) {
+
+        if (!categoryMapper.existsById(board.getCategoryId())){
+            throw new IllegalArgumentException("카테고리가 존재하지 않습니다.");
+        }
+
+        // 비밀번호 암호화
+        board.setPassword(passwordEncoder.encode(board.getPassword()));
+
+        // DB 저장
+        boardMapper.insert(board);
+
+        return board;
     }
 
     /**

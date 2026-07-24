@@ -59,6 +59,22 @@ public class BoardController {
     }
 
     /**
+     * 게시글 생성을 요청한다.
+     *
+     * @param model 뷰로 전달할 데이터
+     * @return 게시판 상세 뷰 이름
+     */
+    @PostMapping("/board")
+    public String create(@Valid @RequestBody BoardCreateRequestDto requestDto, Model model) {
+
+        Board board = boardService.create(requestDto.toEntity());
+        BoardCreateResponseDto responseDto = BoardCreateResponseDto.from(board);
+
+        model.addAttribute("boardDetail", responseDto);
+        return "board-view";
+    }
+
+    /**
      * 게시글 수정 화면을 조회한다.
      *
      * @param seq   수정할 게시글 번호

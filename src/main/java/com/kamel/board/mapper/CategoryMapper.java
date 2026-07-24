@@ -17,4 +17,11 @@ public interface CategoryMapper {
      * @return 카테고리 전체 목록
      */
     List<Category> findAll();
+
+    /**
+     * 카테고리가 존재하는지 확인한다.
+     *
+     * @return 카테고리 존재 여부
+     */
+    boolean existsById(Long categoryId);
 }

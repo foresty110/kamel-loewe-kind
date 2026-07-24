@@ -4,6 +4,26 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kamel.board.mapper.BoardMapper">
 
+    <insert id="insert"
+            parameterType="Board"
+            useGeneratedKeys="true"
+            keyProperty="seq">
+        INSERT INTO board (
+            category_id,
+            author,
+            password,
+            title,
+            content
+        ) VALUES (
+                    #{categoryId},
+                    #{author},
+                    #{password},
+                    #{title},
+                    #{content}
+                 )
+
+    </insert>
+
     <select id="search"
             parameterType="BoardSearchCondition"
             resultType="BoardListResponseDto">

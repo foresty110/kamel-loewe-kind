@@ -10,4 +10,12 @@
         FROM category
     </select>
 
+    <select id="existsById"
+            parameterType="Long"
+            resultType="boolean">
+        SELECT EXISTS(
+            SELECT 1 FROM category WHERE id = #{categoryId}
+        )
+    </select>
+
 </mapper>
