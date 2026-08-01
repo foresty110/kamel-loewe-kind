@@ -1,12 +1,14 @@
 package com.kamel.board.dto;
 
 import com.kamel.board.service.BoardSearchCondition;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
 /**
  * 게시판 목록 화면에서 넘어오는 검색 조건 요청 DTO
  */
+@Setter
 public class BoardListRequestDto {
     private String keyword; // 제목/작성자/내용 통합 검색어
     private Long categoryId; // 카테고리 필터, 선택하지 않으면 전체 카테고리를 조회
