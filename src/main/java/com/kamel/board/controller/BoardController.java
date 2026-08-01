@@ -30,7 +30,7 @@ public class BoardController {
      * @return 게시판 목록 뷰 이름
      */
     @GetMapping("/board")
-    public String getList(@RequestBody BoardListRequestDto requestDto, Model model) {
+    public String getList(@ModelAttribute BoardListRequestDto requestDto, Model model) {
 
         List<CategoryResponseDto> categoryList = categoryService.getAllCateogry().stream()
                 .map(CategoryResponseDto::from)
@@ -40,7 +40,7 @@ public class BoardController {
 
         model.addAttribute("categoryList", categoryList);
         model.addAttribute("boardList", boardList);
-        return "board";
+        return "board-list";
     }
 
     /**

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>철학 자유게시판 - 목록</title>
+<link rel="stylesheet" th:href="@{/css/board-common.css}">
+</head>
+<body>
+
+<div style="max-width: 1080px; margin: 0 auto; padding: 32px 24px 60px;">
+
+    <p class="page-title">철학 자유게시판 - 목록</p>
+
+    <form method="get" th:action="@{/board}">
+        <div class="toolbar">
+            <div class="field">
+                <input class="text-input" type="date" name="startDate" th:value="${param.startDate?.[0]}" style="width:140px;flex:none;">
+                <span style="color:var(--muted);">~</span>
+                <input class="text-input" type="date" name="endDate" th:value="${param.endDate?.[0]}" style="width:140px;flex:none;">
+            </div>
+            <div class="field">
+                <select class="select-input" name="categoryId">
+                    <option value="">전체 카테고리</option>
+                    <option th:each="category : ${categoryList}"
+                            th:value="${category.id}"
+                            th:selected="${param.categoryId != null and !param.categoryId.isEmpty() and param.categoryId[0] == category.id.toString()}"
+                            th:text="${category.name}"></option>
+                </select>
+            </div>
+            <div class="field search-field">
+                <input class="text-input" type="text" name="keyword" th:value="${param.keyword != null and !param.keyword.isEmpty() ? param.keyword[0] : ''}" placeholder="검색어를 입력해 주세요 (제목+작성자+내용)">
+                <button type="submit" class="btn-search">검색</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="list-meta">
+        총 <strong th:text="${#lists.size(boardList)}"></strong>건
+    </div>
+
+    <table class="board-table">
+        <thead>
+        <tr>
+            <th style="width:36px"></th>
+            <th style="width:80px">카테고리</th>
+            <th>제목</th>
+            <th>작성자</th>
+            <th>조회수</th>
+            <th>등록/수정 일시</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="board : ${boardList}">
+            <td><span class="clip" th:if="${board.hasAttachment}">📎</span></td>
+            <td><span class="cat-pill" th:text="${board.categoryName}"></span></td>
+            <td>
+                <a th:href="@{/board/{seq}(seq=${board.seq})}">
+                    <span class="post-title" th:text="${board.title}"></span>
+                </a>
+            </td>
+            <td class="col-author" th:text="${board.author}"></td>
+            <td class="col-views" th:text="${board.viewCount}"></td>
+            <td class="col-date">
+                <span th:text="${#temporals.format(board.createdAt, 'yyyy.MM.dd HH:mm')}"></span><br>
+                <span class="dash" th:if="${board.updatedAt == null}">-</span>
+                <span th:unless="${board.updatedAt == null}" th:text="${#temporals.format(board.updatedAt, 'yyyy.MM.dd HH:mm')}"></span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="list-footer">
+        <a th:href="@{/board/new}" class="btn-primary">등록</a>
+    </div>
+
+</div>
+
+</body>
+</html>
