@@ -373,3 +373,73 @@ a {
   gap: 8px;
   margin-top: 20px;
 }
+
+/* ---------- board-edit ---------- */
+
+.info-block {
+  background: #fafafb;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 4px 16px;
+  margin-bottom: 20px;
+}
+
+.info-block .info-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+
+.info-block .info-row:last-child {
+  border-bottom: none;
+}
+
+.info-block .info-label {
+  width: 84px;
+  flex-shrink: 0;
+  color: var(--muted);
+}
+
+.info-block .info-value {
+  color: var(--ink);
+}
+
+.form-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.form-row .form-label {
+  width: 84px;
+  flex-shrink: 0;
+  padding-top: 9px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.form-row .form-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.field.textarea-field {
+  height: 220px;
+  align-items: flex-start;
+}
+
+.content-textarea {
+  resize: none;
+  height: 100%;
+}
+
+.form-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 24px;
+}

@@ -108,13 +108,12 @@ public class BoardController {
      * @return 게시판 상세 뷰 이름
      */
     @PutMapping("/board/{seq}")
-    public String update(@PathVariable Long seq, @Valid @RequestBody BoardUpdateRequestDto requestDto, Model model) {
+    public ResponseEntity<Void> update(@PathVariable Long seq, @Valid @RequestBody BoardUpdateRequestDto requestDto, Model model) {
 
         Board board = boardService.update(seq, requestDto.toEntity());
         BoardUpdateResponseDto responseDto = BoardUpdateResponseDto.from(board);
 
-        model.addAttribute("boardDetail", responseDto);
-        return "board-view";
+        return ResponseEntity.noContent().build();
     }
 
     /**

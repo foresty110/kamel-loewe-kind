@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>철학 자유게시판 - 수정</title>
+<link rel="stylesheet" th:href="@{/css/board-common.css}">
+</head>
+<body>
+
+<div style="max-width: 1080px; margin: 0 auto; padding: 32px 24px 60px;">
+
+    <p class="page-title">철학 자유게시판 - 수정</p>
+
+    <div class="info-block">
+        <div class="info-row">
+            <span class="info-label">작성자</span>
+            <span class="info-value" th:text="${boardDetail.author}"></span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">등록일시</span>
+            <span class="info-value" th:text="${#temporals.format(boardDetail.createdAt, 'yyyy.MM.dd HH:mm')}"></span>
+        </div>
+        <div class="info-row" th:if="${boardDetail.updatedAt != null}">
+            <span class="info-label">수정일시</span>
+            <span class="info-value" th:text="${#temporals.format(boardDetail.updatedAt, 'yyyy.MM.dd HH:mm')}"></span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">조회수</span>
+            <span class="info-value" th:text="${boardDetail.viewCount}"></span>
+        </div>
+    </div>
+
+    <form id="editForm" th:data-seq="${boardDetail.seq}">
+        <div class="form-row">
+            <span class="form-label">카테고리 *</span>
+            <div class="form-body">
+                <div class="field">
+                    <select class="select-input" id="categoryId" required>
+                        <option value="" disabled>카테고리 선택</option>
+                        <option th:each="category : ${categoryList}"
+                                th:value="${category.id}"
+                                th:selected="${category.id == boardDetail.categoryId}"
+                                th:text="${category.name}"></option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <span class="form-label">제목 *</span>
+            <div class="form-body">
+                <div class="field">
+                    <input class="text-input" type="text" id="title" th:value="${boardDetail.title}"
+                           placeholder="제목을 입력해 주세요" maxlength="200" required>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <span class="form-label">내용 *</span>
+            <div class="form-body">
+                <div class="field textarea-field">
+                    <textarea class="text-input content-textarea" id="content"
+                              placeholder="내용을 입력해 주세요" required th:text="${boardDetail.content}"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-footer">
+            <a th:href="@{/board/{seq}(seq=${boardDetail.seq})}" class="btn-secondary">취소</a>
+            <button type="submit" class="btn-primary">저장</button>
+        </div>
+    </form>
+
+</div>
+
+<div class="layer-backdrop" id="editConfirmLayer" style="display:none;">
+    <div class="layer-card">
+        <p class="layer-title">비밀번호 확인</p>
+        <div class="field">
+            <input class="text-input" type="password" id="editPassword" placeholder="등록 시 입력한 비밀번호">
+        </div>
+        <div class="layer-footer">
+            <button type="button" class="btn-secondary" onclick="closeEditConfirm()">취소</button>
+            <button type="button" class="btn-primary" id="editConfirmBtn" disabled onclick="submitEdit()">확인</button>
+        </div>
+    </div>
+</div>
+
+<script th:inline="none">
+    document.getElementById('editForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        var categoryId = document.getElementById('categoryId').value;
+        var title = document.getElementById('title').value.trim();
+        var content = document.getElementById('content').value.trim();
+
+        if (!categoryId) {
+            alert('카테고리를 선택해 주세요.');
+            return;
+        }
+        if (title.length === 0) {
+            alert('제목을 입력해 주세요.');
+            return;
+        }
+        if (content.length === 0) {
+            alert('내용을 입력해 주세요.');
+            return;
+        }
+
+        document.getElementById('editConfirmLayer').style.display = 'flex';
+    });
+
+    document.getElementById('editPassword').addEventListener('input', function (e) {
+        document.getElementById('editConfirmBtn').disabled = e.target.value.length === 0;
+    });
+
+    function closeEditConfirm() {
+        document.getElementById('editConfirmLayer').style.display = 'none';
+        document.getElementById('editPassword').value = '';
+        document.getElementById('editConfirmBtn').disabled = true;
+    }
+
+    function submitEdit() {
+        var seq = document.getElementById('editForm').dataset.seq;
+        var categoryId = document.getElementById('categoryId').value;
+        var title = document.getElementById('title').value.trim();
+        var content = document.getElementById('content').value.trim();
+        var password = document.getElementById('editPassword').value;
+
+        fetch('/board/' + seq, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                categoryId: Number(categoryId),
+                password: password,
+                title: title,
+                content: content
+            })
+        }).then(function (res) {
+            if (res.ok) {
+                window.location.href = '/board/' + seq;
+            } else {
+                alert('비밀번호가 일치하지 않습니다.');
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
