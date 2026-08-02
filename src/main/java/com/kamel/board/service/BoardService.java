@@ -1,5 +1,6 @@
 package com.kamel.board.service;
 
+import com.kamel.board.dto.BoardDeleteRequestDto;
 import com.kamel.board.dto.BoardListResponseDto;
 import com.kamel.board.entity.Board;
 import com.kamel.board.mapper.BoardMapper;
@@ -121,13 +122,16 @@ public class BoardService {
      * @return 삭제 대상 게시글 정보
      * @throws IllegalArgumentException 존재하지 않는 게시글 번호인 경우
      */
-    public Board delete(Long seq) {
+    public Board delete(Long seq, BoardDeleteCondition deleteCondition) {
         // 존재하지 않는 게시글이면 예외 처리
         if (!boardMapper.existsById(seq)) {
             throw new IllegalArgumentException("게시글이 존재하지 않습니다.");
         }
 
         Board deleteBoard = boardMapper.findById(seq);
+        if(!passwordEncoder.matches(deleteCondition.getPassword(),deleteBoard.getPassword())){
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
 
         boardMapper.delete(seq);
 

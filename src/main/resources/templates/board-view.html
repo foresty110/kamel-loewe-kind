@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>철학 자유게시판 - 보기</title>
+<link rel="stylesheet" th:href="@{/css/board-common.css}">
+</head>
+<body>
+
+<div style="max-width: 1080px; margin: 0 auto; padding: 32px 24px 60px;">
+
+    <p class="page-title">철학 자유게시판 - 보기</p>
+
+    <div class="view-meta-row">
+        <span class="view-author" th:text="${boardDetail.author}"></span>
+        <span class="view-dates">
+            등록일 <span th:text="${#temporals.format(boardDetail.createdAt, 'yyyy.MM.dd HH:mm')}"></span>
+            <th:block th:if="${boardDetail.updatedAt != null}">
+                <span class="sep">·</span>수정일 <span th:text="${#temporals.format(boardDetail.updatedAt, 'yyyy.MM.dd HH:mm')}"></span>
+            </th:block>
+        </span>
+    </div>
+
+    <div class="view-title-row">
+        <div class="view-title">
+            <span class="cat-pill" th:text="${boardDetail.categoryName}"></span>
+            <span th:text="${boardDetail.title}"></span>
+        </div>
+        <span class="view-views">조회수: <span th:text="${boardDetail.viewCount}"></span></span>
+    </div>
+
+    <div class="view-content" th:text="${boardDetail.content}"></div>
+
+    <div class="view-comments">
+        <p class="comment-heading">댓글 0</p>
+        <div class="comment-list"></div>
+        <div class="comment-form">
+            <textarea class="text-input comment-textarea" placeholder="댓글을 입력해 주세요." disabled></textarea>
+            <button type="button" class="btn-secondary" disabled>등록</button>
+        </div>
+    </div>
+
+    <div class="view-actions">
+        <a th:href="@{/board}" class="btn-secondary btn-dark">목록</a>
+        <a th:href="@{/board/{seq}/edit(seq=${boardDetail.seq})}" class="btn-secondary">수정</a>
+        <button type="button" class="btn-secondary" onclick="openDeleteConfirm()">삭제</button>
+    </div>
+
+</div>
+
+<div class="layer-backdrop" id="deleteConfirmLayer" th:data-seq="${boardDetail.seq}" style="display:none;">
+    <div class="layer-card">
+        <p class="layer-title">비밀번호 확인</p>
+        <div class="field">
+            <input class="text-input" type="password" id="deletePassword" placeholder="비밀번호를 입력해 주세요.">
+        </div>
+        <div class="layer-footer">
+            <button type="button" class="btn-secondary" onclick="closeDeleteConfirm()">취소</button>
+            <button type="button" class="btn-primary" id="deleteConfirmBtn" disabled onclick="submitDelete()">확인</button>
+        </div>
+    </div>
+</div>
+
+<script th:inline="none">
+    function openDeleteConfirm() {
+        document.getElementById('deleteConfirmLayer').style.display = 'flex';
+    }
+    function closeDeleteConfirm() {
+        document.getElementById('deleteConfirmLayer').style.display = 'none';
+    }
+
+    document.getElementById('deletePassword').addEventListener('input', function (e) {
+        document.getElementById('deleteConfirmBtn').disabled = e.target.value.length === 0;
+    });
+
+    function submitDelete() {
+        var layer = document.getElementById('deleteConfirmLayer');
+        var seq = layer.dataset.seq;
+        var password = document.getElementById('deletePassword').value;
+
+        fetch('/board/' + seq, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: password })
+        }).then(function (res) {
+            if (res.ok) {
+                alert('삭제되었습니다.');
+                window.location.href = '/board';
+            } else {
+                alert('비밀번호가 일치하지 않습니다.');
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

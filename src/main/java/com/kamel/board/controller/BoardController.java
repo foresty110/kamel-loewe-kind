@@ -6,6 +6,7 @@ import com.kamel.board.service.BoardService;
 import com.kamel.board.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -84,7 +85,13 @@ public class BoardController {
     @GetMapping("/board/{seq}/edit")
     public String edit(@PathVariable Long seq, Model model) {
 
+        List<CategoryResponseDto> categoryList = categoryService.getAllCateogry().stream()
+                .map(CategoryResponseDto::from)
+                .toList();
+
         BoardEditResponseDto responseDto = BoardEditResponseDto.from(boardService.edit(seq));
+
+        model.addAttribute("categoryList", categoryList);
         model.addAttribute("boardDetail", responseDto);
         return "board-edit";
     }
@@ -99,7 +106,7 @@ public class BoardController {
     @PutMapping("/board/{seq}")
     public String update(@PathVariable Long seq, @Valid @RequestBody BoardUpdateRequestDto requestDto, Model model) {
 
-        Board board = boardService.update(seq,requestDto.toEntity());
+        Board board = boardService.update(seq, requestDto.toEntity());
         BoardUpdateResponseDto responseDto = BoardUpdateResponseDto.from(board);
 
         model.addAttribute("boardDetail", responseDto);
@@ -114,12 +121,11 @@ public class BoardController {
      * @return 게시판 목록 뷰 이름
      */
     @DeleteMapping("/board/{seq}")
-    public String delete(@PathVariable Long seq,Model model){
+    public ResponseEntity<Void> delete(@PathVariable Long seq,
+                                       @Valid @RequestBody BoardDeleteRequestDto requestDto) {
 
-        Board board = boardService.delete(seq);
-        BoardDeleteResponseDto responseDto = BoardDeleteResponseDto.from(board);
+        boardService.delete(seq, requestDto.toDeleteCondition());
 
-        model.addAttribute("boardDetail", responseDto);
-        return "board-list";
+        return ResponseEntity.noContent().build();
     }
 }
