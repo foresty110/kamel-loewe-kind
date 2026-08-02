@@ -64,19 +64,35 @@ public class BoardController {
     }
 
     /**
+     * 게시글 생성 폼 화면을 조회한다.
+     *
+     * @param model 뷰로 전달할 데이터
+     * @return 게시판 생성 뷰 이름
+     */
+    @GetMapping("/board/new")
+    public String write(Model model) {
+
+        List<CategoryResponseDto> categoryList = categoryService.getAll().stream()
+                .map(CategoryResponseDto::from)
+                .toList();
+
+        model.addAttribute("categoryList", categoryList);
+        return "board-create";
+    }
+
+    /**
      * 게시글 생성을 요청한다.
      *
      * @param model 뷰로 전달할 데이터
      * @return 게시판 상세 뷰 이름
      */
     @PostMapping("/board")
-    public String create(@Valid @RequestBody BoardCreateRequestDto requestDto, Model model) {
+    public ResponseEntity<BoardCreateResponseDto>  create(@Valid @RequestBody BoardCreateRequestDto requestDto, Model model) {
 
         Board board = boardService.create(requestDto.toEntity());
         BoardCreateResponseDto responseDto = BoardCreateResponseDto.from(board);
 
-        model.addAttribute("boardDetail", responseDto);
-        return "board-view";
+        return  ResponseEntity.ok(responseDto);
     }
 
     /**
