@@ -18,4 +18,12 @@
         )
     </select>
 
+    <select id="findById"
+            parameterType="Long"
+            resultType="Category">
+        SELECT id,
+               name
+        FROM category
+        WHERE id = #{categoryId}
+    </select>
 </mapper>

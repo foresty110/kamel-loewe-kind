@@ -24,4 +24,11 @@ public interface CategoryMapper {
      * @return 카테고리 존재 여부
      */
     boolean existsById(Long categoryId);
+
+    /**
+     * 카테고리 id로 해당 카테고리를 조회한다.
+     *
+     * @return 카테고리 데이터
+     */
+    Category findById(Long categoryId);
 }

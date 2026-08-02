@@ -2,6 +2,7 @@ package com.kamel.board.controller;
 
 import com.kamel.board.dto.*;
 import com.kamel.board.entity.Board;
+import com.kamel.board.entity.Category;
 import com.kamel.board.service.BoardService;
 import com.kamel.board.service.CategoryService;
 import jakarta.validation.Valid;
@@ -33,7 +34,7 @@ public class BoardController {
     @GetMapping("/board")
     public String getList(@ModelAttribute BoardListRequestDto requestDto, Model model) {
 
-        List<CategoryResponseDto> categoryList = categoryService.getAllCateogry().stream()
+        List<CategoryResponseDto> categoryList = categoryService.getAll().stream()
                 .map(CategoryResponseDto::from)
                 .toList();
 
@@ -54,7 +55,10 @@ public class BoardController {
     @GetMapping("/board/{seq}")
     public String getDetail(@PathVariable Long seq, Model model) {
 
-        BoardDetailResponseDto boardDetail = BoardDetailResponseDto.from(boardService.getDetail(seq));
+        Board board = boardService.getDetail(seq);
+        Category category = categoryService.getOne(board.getCategoryId());
+
+        BoardDetailResponseDto boardDetail = BoardDetailResponseDto.from(board,category);
         model.addAttribute("boardDetail", boardDetail);
         return "board-view";
     }
@@ -85,7 +89,7 @@ public class BoardController {
     @GetMapping("/board/{seq}/edit")
     public String edit(@PathVariable Long seq, Model model) {
 
-        List<CategoryResponseDto> categoryList = categoryService.getAllCateogry().stream()
+        List<CategoryResponseDto> categoryList = categoryService.getAll().stream()
                 .map(CategoryResponseDto::from)
                 .toList();
 

@@ -20,7 +20,11 @@ public class CategoryService {
      *
      * @return 카테고리 전체 목록
      */
-    public List<Category> getAllCateogry(){
+    public List<Category> getAll(){
         return categoryMapper.findAll();
+    }
+
+    public Category getOne(Long categoryId) {
+        return categoryMapper.findById(categoryId);
     }
 }
