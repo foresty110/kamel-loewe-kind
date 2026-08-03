@@ -1,5 +1,6 @@
 package com.kamel.board.entity;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
  */
 @Getter
 @Setter
+@Builder
 public class Comment {
     private Long id; // 댓글 번호
     private Long boardId; // 카테고리 ID

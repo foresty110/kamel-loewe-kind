@@ -16,4 +16,30 @@
         WHERE board_seq = #{seq}
     </select>
 
+    <select id="findById"
+            parameterType="Long"
+            resultType="Comment">
+        SELECT id,
+               board_seq  AS boardId,
+               author,
+               content,
+               created_at AS createdAt
+        FROM comment
+        WHERE id = #{id}
+    </select>
+
+    <insert id="insert"
+            parameterType="Comment"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO comment (
+            board_seq,
+            author,
+            content
+        ) VALUES (
+                     #{boardId},
+                     #{author},
+                     #{content}
+                 )
+    </insert>
 </mapper>

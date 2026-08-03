@@ -32,7 +32,7 @@
 
     <div class="view-content" th:text="${boardDetail.content}"></div>
 
-    <div class="view-comments">
+    <div class="view-comments" th:data-seq="${boardDetail.seq}">
         <p class="comment-heading" th:text="'댓글 ' + ${#lists.size(commentList)}"></p>
         <div class="comment-list">
             <div class="comment-item" th:each="comment : ${commentList}">
@@ -44,8 +44,11 @@
             </div>
         </div>
         <div class="comment-form">
-            <textarea class="text-input comment-textarea" placeholder="댓글을 입력해 주세요." disabled></textarea>
-            <button type="button" class="btn-secondary" disabled>등록</button>
+            <div class="field comment-author-field">
+                <input class="text-input" type="text" id="commentAuthor" placeholder="작성자" maxlength="20">
+            </div>
+            <textarea class="text-input comment-textarea" id="commentContent" placeholder="댓글을 입력해 주세요."></textarea>
+            <button type="button" class="btn-secondary" onclick="submitComment()">등록</button>
         </div>
     </div>
 
@@ -81,6 +84,77 @@
     document.getElementById('deletePassword').addEventListener('input', function (e) {
         document.getElementById('deleteConfirmBtn').disabled = e.target.value.length === 0;
     });
+
+    function submitComment() {
+        var wrapper = document.querySelector('.view-comments');
+        var seq = wrapper.dataset.seq;
+        var authorInput = document.getElementById('commentAuthor');
+        var contentInput = document.getElementById('commentContent');
+        var author = authorInput.value.trim();
+        var content = contentInput.value.trim();
+
+        if (author.length === 0) {
+            alert('작성자명을 입력해 주세요.');
+            return;
+        }
+        if (content.length === 0) {
+            alert('댓글 내용을 입력해 주세요.');
+            return;
+        }
+
+        fetch('/board/' + seq + '/comments', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ author: author, content: content })
+        }).then(function (res) {
+            if (!res.ok) {
+                alert('댓글 등록에 실패했습니다.');
+                return;
+            }
+            res.json().then(function (comment) {
+                addCommentToList(comment);
+                authorInput.value = '';
+                contentInput.value = '';
+            });
+        });
+    }
+
+    function addCommentToList(comment) {
+        var list = document.querySelector('.comment-list');
+
+        var item = document.createElement('div');
+        item.className = 'comment-item';
+
+        var meta = document.createElement('div');
+        meta.className = 'comment-meta';
+
+        var authorEl = document.createElement('span');
+        authorEl.className = 'comment-author';
+        authorEl.textContent = comment.author;
+
+        var dateEl = document.createElement('span');
+        dateEl.className = 'comment-date';
+        dateEl.textContent = formatDateTime(comment.createdAt);
+
+        meta.appendChild(authorEl);
+        meta.appendChild(dateEl);
+
+        var body = document.createElement('div');
+        body.className = 'comment-body';
+        body.textContent = comment.content;
+
+        item.appendChild(meta);
+        item.appendChild(body);
+        list.appendChild(item);
+
+        document.querySelector('.comment-heading').textContent = '댓글 ' + list.children.length;
+    }
+
+    function formatDateTime(iso) {
+        var d = new Date(iso);
+        var pad = function (n) { return String(n).padStart(2, '0'); };
+        return d.getFullYear() + '.' + pad(d.getMonth() + 1) + '.' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+    }
 
     function submitDelete() {
         var layer = document.getElementById('deleteConfirmLayer');

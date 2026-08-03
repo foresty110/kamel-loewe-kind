@@ -16,4 +16,18 @@ public interface CommentMapper {
      * @return 댓글 전체 목록
      */
     List<Comment> findAllByBoardId(Long seq);
+
+    /**
+     * 댓글 id로 해당 댓글을 조회한다.
+     *
+     * @return 댓글 엔티티
+     */
+    Comment findById(Long commentId);
+
+    /**
+     * 댓글을 생성한다.
+     *
+     * @param comment 생성할 댓글 정보
+     */
+    void insert(Comment comment);
 }

@@ -319,6 +319,10 @@ a {
   margin-top: 16px;
 }
 
+.comment-form .comment-author-field {
+  flex: 0 0 140px;
+}
+
 .comment-form .comment-textarea {
   background: #fafafb;
   border: 1px solid var(--line);
