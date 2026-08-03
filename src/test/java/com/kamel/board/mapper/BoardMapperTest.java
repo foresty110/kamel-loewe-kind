@@ -1,16 +1,12 @@
 package com.kamel.board.mapper;
 
-import com.kamel.board.dto.BoardListResponseDto;
 import com.kamel.board.entity.Board;
-import com.kamel.board.service.BoardSearchCondition;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,7 +32,7 @@ class BoardMapperTest {
         boardMapper.insert(board);
 
         // then: 저장한 데이터가 일치하는지 확인한다.
-        Board saved = boardMapper.findById(board.getSeq());
+        Board saved = boardMapper.findById(board.getId());
         assertThat(saved.getTitle()).isEqualTo("제목");
     }
 
@@ -46,7 +42,7 @@ class BoardMapperTest {
 
         // given: 임의의 게시글 1건을 테이블에 저장한다.
         jdbcTemplate.update(
-                "INSERT INTO board (seq, category_id, author, password, title, content, view_count) " +
+                "INSERT INTO board (id, category_id, author, password, title, content, view_count) " +
                         "VALUES (9999, 1, '삭제될 작성자명', '삭제될 비밀번호', '삭제될 제목', '삭제될 내용', 1)");
 
         // when: 게시글 삭제
@@ -56,7 +52,7 @@ class BoardMapperTest {
 
         // then: 삭제한 게시글 ID로 조회하여 결과 확인
         Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM board WHERE seq = ?", Integer.class, 9999L);
+                "SELECT COUNT(*) FROM board WHERE id = ?", Integer.class, 9999L);
         assertThat(count).isZero();
     }
 }

@@ -7,7 +7,7 @@
     <insert id="insert"
             parameterType="Board"
             useGeneratedKeys="true"
-            keyProperty="seq">
+            keyProperty="id">
         INSERT INTO board (
             category_id,
             author,
@@ -29,17 +29,17 @@
             resultType="BoardListResponseDto">
 
         SELECT
-            b.seq,
-            c.name          AS categoryName,
+            b.id,
+            c.name,
             b.author,
             b.title,
-            b.view_count    AS viewCount,
-            b.created_at    AS createdAt,
-            b.updated_at    AS updatedAt,
+            b.view_count,
+            b.created_at,
+            b.updated_at,
             EXISTS(
                 SELECT 1
                 FROM attachment a
-                WHERE a.board_seq = b.seq
+                WHERE a.board_id = b.id
                 ) AS hasAttachment
         FROM board b
         INNER JOIN category c ON c.id = b.category_id
@@ -77,17 +77,17 @@
             resultType="Board">
 
         SELECT
-            seq,
-            category_id AS categoryId,
+            id,
+            category_id,
             author,
             password,
             title,
             content,
-            view_count  AS viewCount,
-            created_at  AS createdAt,
-            updated_at  AS updatedAt
+            view_count,
+            created_at,
+            updated_at
         FROM board
-        WHERE seq = #{seq}
+        WHERE id = #{id}
 
     </select>
 
@@ -96,7 +96,7 @@
             resultType="boolean">
 
         SELECT EXISTS(
-            SELECT 1 FROM board WHERE seq = #{seq}
+            SELECT 1 FROM board WHERE id = #{id}
             )
 
     </select>
@@ -106,7 +106,7 @@
 
         UPDATE board
         SET view_count = view_count + 1
-        WHERE seq = #{seq}
+        WHERE id = #{id}
 
     </update>
 
@@ -118,14 +118,14 @@
             title        = #{title},
             content      = #{content},
             updated_at   = #{updatedAt}
-        WHERE seq = #{seq}
+        WHERE id = #{id}
 
     </update>
 
     <delete id="delete" parameterType="Long">
         DELETE
         FROM board
-        WHERE seq = #{seq}
+        WHERE id = #{id}
     </delete>
 
 </mapper>

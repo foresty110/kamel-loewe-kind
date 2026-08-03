@@ -15,7 +15,7 @@ public interface CommentMapper {
      *
      * @return 댓글 전체 목록
      */
-    List<Comment> findAllByBoardId(Long seq);
+    List<Comment> findAllByBoardId(Long id);
 
     /**
      * 댓글 id로 해당 댓글을 조회한다.

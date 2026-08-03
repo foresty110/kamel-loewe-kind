@@ -26,13 +26,12 @@ public class CommentController {
      * @param model 뷰로 전달할 데이터
      * @return 게시판 상세 뷰 이름
      */
-    @PostMapping("/board/{seq}/comments")
+    @PostMapping("/board/{boardId}/comments")
     public ResponseEntity<CommentCreateResponseDto> create(
-            @PathVariable Long seq,
-            @Valid @RequestBody CommentCreateRequestDto requestDto,
-            Model model) {
+            @PathVariable Long boardId,
+            @Valid @RequestBody CommentCreateRequestDto requestDto) {
 
-        Comment comment = commentService.create(seq,requestDto.toEntity());
+        Comment comment = commentService.create(boardId,requestDto.toEntity());
         CommentCreateResponseDto responseDto = CommentCreateResponseDto.from(comment);
 
         return ResponseEntity.ok(responseDto);

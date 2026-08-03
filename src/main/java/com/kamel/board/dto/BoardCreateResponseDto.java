@@ -11,11 +11,11 @@ import lombok.Getter;
 @Builder
 public class BoardCreateResponseDto {
 
-    private Long seq; // 새로 생성한 게시글의 번호
+    private Long boardId; // 새로 생성한 게시글의 번호
 
     public static BoardCreateResponseDto from(Board board) {
         return BoardCreateResponseDto.builder()
-                .seq(board.getSeq())
+                .boardId(board.getId())
                 .build();
     }
 }

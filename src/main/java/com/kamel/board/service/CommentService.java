@@ -20,23 +20,23 @@ public class CommentService {
     /**
      * 게시글에 속한 댓글 전체 목록을 조회한다.
      *
-     * @param seq 게시글 ID
+     * @param id 게시글 ID
      * @return 댓글 목록
      */
-    public List<Comment> getAll(Long seq) {
-        boardService.validateExists(seq);
-        return commentMapper.findAllByBoardId(seq);
+    public List<Comment> getAll(Long id) {
+        boardService.validateExists(id);
+        return commentMapper.findAllByBoardId(id);
     }
 
     /**
      * 게시글에 속한 댓글 전체 목록을 조회한다.
      *
-     * @param seq 게시글 ID
+     * @param id 게시글 ID
      * @return 댓글 목록
      */
-    public Comment create(Long seq, Comment comment) {
-        boardService.validateExists(seq);
-        comment.setBoardId(seq);
+    public Comment create(Long id, Comment comment) {
+        boardService.validateExists(id);
+        comment.setBoardId(id);
         commentMapper.insert(comment);
 
         Comment createComment = commentMapper.findById(comment.getId());

@@ -35,19 +35,19 @@ public class BoardService {
     /**
      * 게시글 상세 정보를 조회하고 조회수를 1 증가시킨다.
      *
-     * @param seq 상세 조회할 게시글 번호
+     * @param id 상세 조회할 게시글 번호
      * @return 조회수가 반영된 게시글 정보
      * @throws IllegalArgumentException 존재하지 않는 게시글 번호인 경우
      */
     @Transactional
-    public Board getDetail(Long seq) {
+    public Board getDetail(Long id) {
         //게시글 존재여부 확인
-        this.validateExists(seq);
+        this.validateExists(id);
 
         // 조회수 증가
-        boardMapper.increaseViewCount(seq);
+        boardMapper.increaseViewCount(id);
 
-        return boardMapper.findById(seq);
+        return boardMapper.findById(id);
     }
 
     /**
@@ -74,30 +74,30 @@ public class BoardService {
     /**
      * 수정 대상 게시글의 정보를 가져온다.
      *
-     * @param seq 수정 대상 게시글 번호
+     * @param id 수정 대상 게시글 번호
      * @return 수정 대상 게시글 정보
      * @throws IllegalArgumentException 존재하지 않는 게시글 번호인 경우
      */
-    public Board edit(Long seq) {
+    public Board edit(Long id) {
         //게시글 존재여부 확인
-        this.validateExists(seq);
+        this.validateExists(id);
 
-        return boardMapper.findById(seq);
+        return boardMapper.findById(id);
     }
 
     /**
      * 게시글을 수정한다.
      *
-     * @param seq 수정 대상 게시글 번호
+     * @param id 수정 대상 게시글 번호
      * @return 수정 대상 게시글 정보
      * @throws IllegalArgumentException 존재하지 않는 게시글 번호인 경우
      */
     @Transactional
-    public Board update(Long seq, Board board) {
+    public Board update(Long id, Board board) {
         //게시글 존재여부 확인
-        this.validateExists(seq);
+        this.validateExists(id);
 
-        Board befBoard = boardMapper.findById(seq);
+        Board befBoard = boardMapper.findById(id);
 
         befBoard.update(
                 board.getCategoryId(),
@@ -113,22 +113,22 @@ public class BoardService {
     /**
      * 게시글을 삭제한다.
      *
-     * @param seq 수정 대상 게시글 번호
+     * @param id 수정 대상 게시글 번호
      * @return 삭제 대상 게시글 정보
      * @throws IllegalArgumentException 존재하지 않는 게시글 번호인 경우
      */
-    public Board delete(Long seq, BoardDeleteCondition deleteCondition) {
+    public Board delete(Long id, BoardDeleteCondition deleteCondition) {
         // 존재하지 않는 게시글이면 예외 처리
-        if (!boardMapper.existsById(seq)) {
+        if (!boardMapper.existsById(id)) {
             throw new IllegalArgumentException("게시글이 존재하지 않습니다.");
         }
 
-        Board deleteBoard = boardMapper.findById(seq);
+        Board deleteBoard = boardMapper.findById(id);
         if (!passwordEncoder.matches(deleteCondition.getPassword(), deleteBoard.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        boardMapper.delete(seq);
+        boardMapper.delete(id);
 
         return deleteBoard;
     }
@@ -136,11 +136,11 @@ public class BoardService {
     /**
      * 게시글이 존재하는지 검증한다.
      *
-     * @param seq 검증할 게시글 번호
+     * @param id 검증할 게시글 번호
      * @throws IllegalArgumentException 존재하지 않는 게시글 번호인 경우
      */
-    public void validateExists(Long seq) {
-        if (!boardMapper.existsById(seq)) {
+    public void validateExists(Long id) {
+        if (!boardMapper.existsById(id)) {
             throw new IllegalArgumentException("게시글이 존재하지 않습니다.");
         }
     }

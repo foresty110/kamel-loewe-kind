@@ -32,7 +32,7 @@
 
     <div class="view-content" th:text="${boardDetail.content}"></div>
 
-    <div class="view-comments" th:data-seq="${boardDetail.seq}">
+    <div class="view-comments" th:data-id="${boardDetail.id}">
         <p class="comment-heading" th:text="'댓글 ' + ${#lists.size(commentList)}"></p>
         <div class="comment-list">
             <div class="comment-item" th:each="comment : ${commentList}">
@@ -54,13 +54,13 @@
 
     <div class="view-actions">
         <a th:href="@{/board}" class="btn-secondary btn-dark">목록</a>
-        <a th:href="@{/board/{seq}/edit(seq=${boardDetail.seq})}" class="btn-secondary">수정</a>
+        <a th:href="@{/board/{boardId}/edit(boardId=${boardDetail.id})}" class="btn-secondary">수정</a>
         <button type="button" class="btn-secondary" onclick="openDeleteConfirm()">삭제</button>
     </div>
 
 </div>
 
-<div class="layer-backdrop" id="deleteConfirmLayer" th:data-seq="${boardDetail.seq}" style="display:none;">
+<div class="layer-backdrop" id="deleteConfirmLayer" th:data-id="${boardDetail.id}" style="display:none;">
     <div class="layer-card">
         <p class="layer-title">비밀번호 확인</p>
         <div class="field">
@@ -87,7 +87,7 @@
 
     function submitComment() {
         var wrapper = document.querySelector('.view-comments');
-        var seq = wrapper.dataset.seq;
+        var id = wrapper.dataset.id;
         var authorInput = document.getElementById('commentAuthor');
         var contentInput = document.getElementById('commentContent');
         var author = authorInput.value.trim();
@@ -102,7 +102,7 @@
             return;
         }
 
-        fetch('/board/' + seq + '/comments', {
+        fetch('/board/' + id + '/comments', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ author: author, content: content })
@@ -158,10 +158,10 @@
 
     function submitDelete() {
         var layer = document.getElementById('deleteConfirmLayer');
-        var seq = layer.dataset.seq;
+        var id = layer.dataset.id;
         var password = document.getElementById('deletePassword').value;
 
-        fetch('/board/' + seq, {
+        fetch('/board/' + id, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ password: password })

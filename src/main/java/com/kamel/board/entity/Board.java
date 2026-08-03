@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 public class Board {
 
-    private Long seq; // 게시글 번호
+    private Long id; // 게시글 번호
     private Long categoryId; // 카테고리 ID
     private String author; // 작성자
     private String password; // 비밀번호 해시

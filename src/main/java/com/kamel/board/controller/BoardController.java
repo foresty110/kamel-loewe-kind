@@ -52,16 +52,16 @@ public class BoardController {
     /**
      * 게시글 상세 화면을 조회한다.
      *
-     * @param seq   조회할 게시글 번호
+     * @param boardId   조회할 게시글 번호
      * @param model 뷰로 전달할 데이터
      * @return 게시판 상세 뷰 이름
      */
-    @GetMapping("/board/{seq}")
-    public String getDetail(@PathVariable Long seq, Model model) {
+    @GetMapping("/board/{boardId}")
+    public String getDetail(@PathVariable Long boardId, Model model) {
 
-        Board board = boardService.getDetail(seq);
+        Board board = boardService.getDetail(boardId);
         Category category = categoryService.getOne(board.getCategoryId());
-        List<Comment> commentList = commentService.getAll(seq);
+        List<Comment> commentList = commentService.getAll(boardId);
 
         model.addAttribute("boardDetail", BoardDetailResponseDto.from(board));
         model.addAttribute("categoryName", category.getName());
@@ -106,18 +106,18 @@ public class BoardController {
     /**
      * 게시글 수정 화면을 조회한다.
      *
-     * @param seq   수정할 게시글 번호
+     * @param boardId   수정할 게시글 번호
      * @param model 뷰로 전달할 데이터
      * @return 게시판 상세 뷰 이름
      */
-    @GetMapping("/board/{seq}/edit")
-    public String edit(@PathVariable Long seq, Model model) {
+    @GetMapping("/board/{boardId}/edit")
+    public String edit(@PathVariable Long boardId, Model model) {
 
         List<CategoryResponseDto> categoryList = categoryService.getAll().stream()
                 .map(CategoryResponseDto::from)
                 .toList();
 
-        BoardEditResponseDto responseDto = BoardEditResponseDto.from(boardService.edit(seq));
+        BoardEditResponseDto responseDto = BoardEditResponseDto.from(boardService.edit(boardId));
 
         model.addAttribute("categoryList", categoryList);
         model.addAttribute("boardDetail", responseDto);
@@ -127,14 +127,14 @@ public class BoardController {
     /**
      * 게시글을 수정 요청한다.
      *
-     * @param seq   수정할 게시글 번호
+     * @param boardId   수정할 게시글 번호
      * @param model 뷰로 전달할 데이터
      * @return 게시판 상세 뷰 이름
      */
-    @PutMapping("/board/{seq}")
-    public ResponseEntity<Void> update(@PathVariable Long seq, @Valid @RequestBody BoardUpdateRequestDto requestDto, Model model) {
+    @PutMapping("/board/{boardId}")
+    public ResponseEntity<Void> update(@PathVariable Long boardId, @Valid @RequestBody BoardUpdateRequestDto requestDto, Model model) {
 
-        Board board = boardService.update(seq, requestDto.toEntity());
+        Board board = boardService.update(boardId, requestDto.toEntity());
         BoardUpdateResponseDto responseDto = BoardUpdateResponseDto.from(board);
 
         return ResponseEntity.noContent().build();
@@ -143,14 +143,14 @@ public class BoardController {
     /**
      * 게시글 삭제를 요청한다.
      *
-     * @param seq 수정할 게시글 번호
+     * @param boardId 수정할 게시글 번호
      * @return 게시판 목록 뷰 이름
      */
-    @DeleteMapping("/board/{seq}")
-    public ResponseEntity<Void> delete(@PathVariable Long seq,
+    @DeleteMapping("/board/{boardId}")
+    public ResponseEntity<Void> delete(@PathVariable Long boardId,
                                        @Valid @RequestBody BoardDeleteRequestDto requestDto) {
 
-        boardService.delete(seq, requestDto.toDeleteCondition());
+        boardService.delete(boardId, requestDto.toDeleteCondition());
 
         return ResponseEntity.noContent().build();
     }

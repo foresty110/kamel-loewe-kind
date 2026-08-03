@@ -55,7 +55,7 @@
             <td><span class="clip" th:if="${board.hasAttachment}">📎</span></td>
             <td><span class="cat-pill" th:text="${board.categoryName}"></span></td>
             <td>
-                <a th:href="@{/board/{seq}(seq=${board.seq})}">
+                <a th:href="@{/board/{boardId}(boardId=${board.id})}">
                     <span class="post-title" th:text="${board.title}"></span>
                 </a>
             </td>

@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 public class BoardUpdateResponseDto {
 
-    private Long seq; // 게시글 번호
+    private Long id; // 게시글 번호
     private Long categoryId; // 카테고리 ID
     private String author; // 작성자
     private String title; // 제목
@@ -30,7 +30,7 @@ public class BoardUpdateResponseDto {
      */
     public static BoardUpdateResponseDto from(Board board) {
         return BoardUpdateResponseDto.builder()
-                .seq(board.getSeq())
+                .id(board.getId())
                 .categoryId(board.getCategoryId())
                 .author(board.getAuthor())
                 .title(board.getTitle())

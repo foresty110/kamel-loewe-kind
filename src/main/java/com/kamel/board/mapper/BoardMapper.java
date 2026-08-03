@@ -32,25 +32,25 @@ public interface BoardMapper {
     /**
      * 게시글 상세 정보를 조회한다.
      *
-     * @param seq 상세 조회할 게시글 번호
+     * @param id 상세 조회할 게시글 번호
      * @return 게시글 정보
      */
-    Board findById(Long seq);
+    Board findById(Long id);
 
     /**
      * 게시글 존재 여부를 확인한다.
      *
-     * @param seq 존재 여부를 확인할 게시글 번호
+     * @param id 존재 여부를 확인할 게시글 번호
      * @return 존재하면 true
      */
-    boolean existsById(Long seq);
+    boolean existsById(Long id);
 
     /**
      * 게시글 조회수를 1 증가시킨다.
      *
-     * @param seq 조회수를 증가시킬 게시글 번호
+     * @param id 조회수를 증가시킬 게시글 번호
      */
-    void increaseViewCount(Long seq);
+    void increaseViewCount(Long id);
 
     /**
      * 게시글 정보를 수정한다.
@@ -62,7 +62,7 @@ public interface BoardMapper {
     /**
      * 게시글 한개를 삭제한다.
      *
-     * @param seq 삭제할 게시글 번호
+     * @param id 삭제할 게시글 번호
      */
-    int delete(Long seq);
+    int delete(Long id);
 }

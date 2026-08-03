@@ -1,7 +1,6 @@
 package com.kamel.board.dto;
 
 import com.kamel.board.entity.Board;
-import com.kamel.board.entity.Category;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,7 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 public class BoardDetailResponseDto {
 
-    private Long seq; // 게시글 번호
+    private Long id; // 게시글 번호
     private String author; // 작성자
     private String title; // 제목
     private String content; // 내용
@@ -30,7 +29,7 @@ public class BoardDetailResponseDto {
      */
     public static BoardDetailResponseDto from(Board board) {
         return BoardDetailResponseDto.builder()
-                .seq(board.getSeq())
+                .id(board.getId())
                 .author(board.getAuthor())
                 .title(board.getTitle())
                 .content(board.getContent())

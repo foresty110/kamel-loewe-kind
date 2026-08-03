@@ -8,22 +8,22 @@
             parameterType="Long"
             resultType="Comment">
         SELECT id,
-               board_seq  AS boardId,
+               board_id,
                author,
                content,
-               created_at AS createdAt
+               created_at
         FROM comment
-        WHERE board_seq = #{seq}
+        WHERE board_id = #{id}
     </select>
 
     <select id="findById"
             parameterType="Long"
             resultType="Comment">
         SELECT id,
-               board_seq  AS boardId,
+               board_id,
                author,
                content,
-               created_at AS createdAt
+               created_at
         FROM comment
         WHERE id = #{id}
     </select>
@@ -33,7 +33,7 @@
             useGeneratedKeys="true"
             keyProperty="id">
         INSERT INTO comment (
-            board_seq,
+            board_id,
             author,
             content
         ) VALUES (

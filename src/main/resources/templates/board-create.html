@@ -119,7 +119,7 @@
         }).then(function (res) {
             if (res.ok) {
                 res.json().then(function (data) {
-                    window.location.href = '/board/' + data.seq;
+                    window.location.href = '/board/' + data.boardId;
                 }).catch(function () {
                     window.location.href = '/board';
                 });

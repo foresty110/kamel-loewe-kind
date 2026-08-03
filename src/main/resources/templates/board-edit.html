@@ -31,7 +31,7 @@
         </div>
     </div>
 
-    <form id="editForm" th:data-seq="${boardDetail.seq}">
+    <form id="editForm" th:data-id="${boardDetail.id}">
         <div class="form-row">
             <span class="form-label">카테고리 *</span>
             <div class="form-body">
@@ -68,7 +68,7 @@
         </div>
 
         <div class="form-footer">
-            <a th:href="@{/board/{seq}(seq=${boardDetail.seq})}" class="btn-secondary">취소</a>
+            <a th:href="@{/board/{boardId}(boardId=${boardDetail.id})}" class="btn-secondary">취소</a>
             <button type="submit" class="btn-primary">저장</button>
         </div>
     </form>
@@ -123,13 +123,13 @@
     }
 
     function submitEdit() {
-        var seq = document.getElementById('editForm').dataset.seq;
+        var id = document.getElementById('editForm').dataset.id;
         var categoryId = document.getElementById('categoryId').value;
         var title = document.getElementById('title').value.trim();
         var content = document.getElementById('content').value.trim();
         var password = document.getElementById('editPassword').value;
 
-        fetch('/board/' + seq, {
+        fetch('/board/' + id, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -140,7 +140,7 @@
             })
         }).then(function (res) {
             if (res.ok) {
-                window.location.href = '/board/' + seq;
+                window.location.href = '/board/' + id;
             } else {
                 alert('비밀번호가 일치하지 않습니다.');
             }

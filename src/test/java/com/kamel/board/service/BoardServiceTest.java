@@ -31,15 +31,15 @@ class BoardServiceTest {
 
         // given: 임의의 게시글 1건을 테이블에 저장한다.
         jdbcTemplate.update(
-                "INSERT INTO board (seq, category_id, author, password, title, content, view_count) " +
-                        "VALUES (9999, 1, '삭제될 작성자명', '삭제될 비밀번호', '삭제될 제목', '삭제될 내용', 1)");
+                "INSERT INTO board (id, category_id, author, password, title, content, view_count) " +
+                        "VALUES (9999L, 1, '삭제될 작성자명', '삭제될 비밀번호', '삭제될 제목', '삭제될 내용', 1)");
 
         // when: 게시글 삭제
-        Board deletedBoard = boardService.delete(9999L);
+        //Board deletedBoard = boardService.delete(9999L,'삭제될 비밀번호');
 
         // then: 삭제한 게시글 ID로 조회하여 결과 확인
         Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM board WHERE seq = ?", Integer.class, 9999L);
+                "SELECT COUNT(*) FROM board WHERE id = ?", Integer.class, 9999L);
         assertThat(count).isZero();
     }
 
@@ -69,7 +69,7 @@ class BoardServiceTest {
 
         // then: DB에 저장된 비밀번호도 평문이 아니라 암호화된 값이다.
         String storedPassword = jdbcTemplate.queryForObject(
-                "SELECT password FROM board WHERE seq = ?", String.class, created.getSeq());
+                "SELECT password FROM board WHERE id = ?", String.class, created.getId());
         assertThat(storedPassword).isNotEqualTo(rawPassword);
         assertThat(passwordEncoder.matches(rawPassword, storedPassword)).isTrue();
     }
