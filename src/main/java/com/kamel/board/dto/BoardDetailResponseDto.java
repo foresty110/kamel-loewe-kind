@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 public class BoardDetailResponseDto {
 
     private Long seq; // 게시글 번호
-    private String categoryName; // 카테고리명
     private String author; // 작성자
     private String title; // 제목
     private String content; // 내용
@@ -26,14 +25,12 @@ public class BoardDetailResponseDto {
     /**
      * {@link Board} 엔티티를 응답 DTO로 변환한다.
      *
-     * @param board    변환할 게시글 엔티티
-     * @param category
+     * @param board 변환할 게시글 엔티티
      * @return 변환된 응답 DTO
      */
-    public static BoardDetailResponseDto from(Board board, Category category) {
+    public static BoardDetailResponseDto from(Board board) {
         return BoardDetailResponseDto.builder()
                 .seq(board.getSeq())
-                .categoryName(category.getName())
                 .author(board.getAuthor())
                 .title(board.getTitle())
                 .content(board.getContent())

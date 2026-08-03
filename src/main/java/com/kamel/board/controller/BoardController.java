@@ -3,8 +3,10 @@ package com.kamel.board.controller;
 import com.kamel.board.dto.*;
 import com.kamel.board.entity.Board;
 import com.kamel.board.entity.Category;
+import com.kamel.board.entity.Comment;
 import com.kamel.board.service.BoardService;
 import com.kamel.board.service.CategoryService;
+import com.kamel.board.service.CommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +23,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardController {
 
-    private final CategoryService categoryService; // 카테고리 드롭다운 목록 조회용 서비스
-    private final BoardService boardService; // 게시글 목록 검색용 서비스
+    private final CategoryService categoryService; // 카테고리 서비스
+    private final BoardService boardService; // 게시글 서비스
+    private final CommentService commentService; // 댓글 서비스
+
 
     /**
      * 게시판 목록 화면을 조회한다.
@@ -57,9 +61,13 @@ public class BoardController {
 
         Board board = boardService.getDetail(seq);
         Category category = categoryService.getOne(board.getCategoryId());
+        List<Comment> commentList = commentService.getAll(seq);
 
-        BoardDetailResponseDto boardDetail = BoardDetailResponseDto.from(board,category);
-        model.addAttribute("boardDetail", boardDetail);
+        model.addAttribute("boardDetail", BoardDetailResponseDto.from(board));
+        model.addAttribute("categoryName", category.getName());
+        model.addAttribute("commentList",
+                commentList.stream().map(CommentDetailResponseDto::from).toList());
+
         return "board-view";
     }
 
@@ -87,12 +95,12 @@ public class BoardController {
      * @return 게시판 상세 뷰 이름
      */
     @PostMapping("/board")
-    public ResponseEntity<BoardCreateResponseDto>  create(@Valid @RequestBody BoardCreateRequestDto requestDto, Model model) {
+    public ResponseEntity<BoardCreateResponseDto> create(@Valid @RequestBody BoardCreateRequestDto requestDto, Model model) {
 
         Board board = boardService.create(requestDto.toEntity());
         BoardCreateResponseDto responseDto = BoardCreateResponseDto.from(board);
 
-        return  ResponseEntity.ok(responseDto);
+        return ResponseEntity.ok(responseDto);
     }
 
     /**
@@ -135,8 +143,7 @@ public class BoardController {
     /**
      * 게시글 삭제를 요청한다.
      *
-     * @param seq   수정할 게시글 번호
-     * @param model 뷰로 전달할 데이터
+     * @param seq 수정할 게시글 번호
      * @return 게시판 목록 뷰 이름
      */
     @DeleteMapping("/board/{seq}")

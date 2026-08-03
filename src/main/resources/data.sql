@@ -26,3 +26,63 @@ SELECT (SELECT id FROM category WHERE name = '형이상학'),
        '존재란 무엇인가',
        '하이데거는 존재와 존재자를 구분해야 한다고 말했습니다. 이 구분이 왜 중요한지 함께 이야기해봐요.'
 WHERE NOT EXISTS (SELECT 1 FROM board WHERE title = '존재란 무엇인가');
+
+INSERT INTO comment (board_seq, author, content)
+SELECT (SELECT seq FROM board WHERE title = '칸트의 정언명령에 대하여'),
+       '정다운',
+       '결과를 전혀 고려하지 않는 게 오히려 비현실적이지 않을까요?'
+WHERE NOT EXISTS (
+    SELECT 1 FROM comment
+    WHERE board_seq = (SELECT seq FROM board WHERE title = '칸트의 정언명령에 대하여')
+      AND author = '정다운'
+);
+
+INSERT INTO comment (board_seq, author, content)
+SELECT (SELECT seq FROM board WHERE title = '칸트의 정언명령에 대하여'),
+       '한지민',
+       '동기의 순수성을 중시한다는 점에서 결과주의와는 확실히 다른 매력이 있네요.'
+WHERE NOT EXISTS (
+    SELECT 1 FROM comment
+    WHERE board_seq = (SELECT seq FROM board WHERE title = '칸트의 정언명령에 대하여')
+      AND author = '한지민'
+);
+
+INSERT INTO comment (board_seq, author, content)
+SELECT (SELECT seq FROM board WHERE title = '소크라테스의 산파술이란?'),
+       '최우진',
+       '스스로 깨닫게 하는 방식이라 지금 교육에도 그대로 적용될 수 있을 것 같아요.'
+WHERE NOT EXISTS (
+    SELECT 1 FROM comment
+    WHERE board_seq = (SELECT seq FROM board WHERE title = '소크라테스의 산파술이란?')
+      AND author = '최우진'
+);
+
+INSERT INTO comment (board_seq, author, content)
+SELECT (SELECT seq FROM board WHERE title = '소크라테스의 산파술이란?'),
+       '오세영',
+       '질문만으로 무지를 깨닫게 하는 게 말처럼 쉽지는 않을 것 같은데, 실제로 효과가 있었을까요?'
+WHERE NOT EXISTS (
+    SELECT 1 FROM comment
+    WHERE board_seq = (SELECT seq FROM board WHERE title = '소크라테스의 산파술이란?')
+      AND author = '오세영'
+);
+
+INSERT INTO comment (board_seq, author, content)
+SELECT (SELECT seq FROM board WHERE title = '존재란 무엇인가'),
+       '윤서연',
+       '존재와 존재자의 구분이 처음엔 어려웠는데, 읽다 보니 조금씩 이해가 되네요.'
+WHERE NOT EXISTS (
+    SELECT 1 FROM comment
+    WHERE board_seq = (SELECT seq FROM board WHERE title = '존재란 무엇인가')
+      AND author = '윤서연'
+);
+
+INSERT INTO comment (board_seq, author, content)
+SELECT (SELECT seq FROM board WHERE title = '존재란 무엇인가'),
+       '강태민',
+       '하이데거는 확실히 어렵네요. 관련해서 쉽게 설명된 책이 있으면 추천 부탁드려요.'
+WHERE NOT EXISTS (
+    SELECT 1 FROM comment
+    WHERE board_seq = (SELECT seq FROM board WHERE title = '존재란 무엇인가')
+      AND author = '강태민'
+);

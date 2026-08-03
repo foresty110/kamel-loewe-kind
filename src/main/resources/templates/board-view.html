@@ -24,7 +24,7 @@
 
     <div class="view-title-row">
         <div class="view-title">
-            <span class="cat-pill" th:text="${boardDetail.categoryName}"></span>
+            <span class="cat-pill" th:text="${categoryName}"></span>
             <span th:text="${boardDetail.title}"></span>
         </div>
         <span class="view-views">조회수: <span th:text="${boardDetail.viewCount}"></span></span>
@@ -33,8 +33,16 @@
     <div class="view-content" th:text="${boardDetail.content}"></div>
 
     <div class="view-comments">
-        <p class="comment-heading">댓글 0</p>
-        <div class="comment-list"></div>
+        <p class="comment-heading" th:text="'댓글 ' + ${#lists.size(commentList)}"></p>
+        <div class="comment-list">
+            <div class="comment-item" th:each="comment : ${commentList}">
+                <div class="comment-meta">
+                    <span class="comment-author" th:text="${comment.author}"></span>
+                    <span class="comment-date" th:text="${#temporals.format(comment.createdAt, 'yyyy.MM.dd HH:mm')}"></span>
+                </div>
+                <div class="comment-body" th:text="${comment.content}"></div>
+            </div>
+        </div>
         <div class="comment-form">
             <textarea class="text-input comment-textarea" placeholder="댓글을 입력해 주세요." disabled></textarea>
             <button type="button" class="btn-secondary" disabled>등록</button>
