@@ -1,6 +1,5 @@
 package com.kamel.board.service;
 
-import com.kamel.board.dto.BoardDeleteRequestDto;
 import com.kamel.board.dto.BoardListResponseDto;
 import com.kamel.board.entity.Board;
 import com.kamel.board.mapper.BoardMapper;
@@ -20,15 +19,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardMapper boardMapper; // 게시글 매퍼
-    private final CategoryMapper categoryMapper; // 카테고리 매퍼
+    private final CategoryService categoryService; // 카테고리 서비스
     private final PasswordEncoder passwordEncoder; // 비밀번호 암호화
+
     /**
      * 검색 조건에 맞는 게시글 목록을 조회한다.
      *
      * @param boardSearchCondition 카테고리/검색어/등록일 범위 등 검색 조건
      * @return 조건에 맞는 게시글 목록
      */
-    public List<BoardListResponseDto> search(BoardSearchCondition boardSearchCondition){
+    public List<BoardListResponseDto> search(BoardSearchCondition boardSearchCondition) {
         return boardMapper.search(boardSearchCondition);
     }
 
@@ -41,11 +41,9 @@ public class BoardService {
      */
     @Transactional
     public Board getDetail(Long seq) {
+        //게시글 존재여부 확인
+        this.validateExists(seq);
 
-        // 존재하지 않는 게시글이면 예외 처리
-        if (!boardMapper.existsById(seq)) {
-            throw new IllegalArgumentException("게시글이 존재하지 않습니다.");
-        }
         // 조회수 증가
         boardMapper.increaseViewCount(seq);
 
@@ -61,9 +59,8 @@ public class BoardService {
      */
     public Board create(Board board) {
 
-        if (!categoryMapper.existsById(board.getCategoryId())){
-            throw new IllegalArgumentException("카테고리가 존재하지 않습니다.");
-        }
+        //카데고리 존재 여부 확인
+        categoryService.validateExists(board.getCategoryId());
 
         // 비밀번호 암호화
         board.setPassword(passwordEncoder.encode(board.getPassword()));
@@ -82,10 +79,9 @@ public class BoardService {
      * @throws IllegalArgumentException 존재하지 않는 게시글 번호인 경우
      */
     public Board edit(Long seq) {
-        // 존재하지 않는 게시글이면 예외 처리
-        if (!boardMapper.existsById(seq)) {
-            throw new IllegalArgumentException("게시글이 존재하지 않습니다.");
-        }
+        //게시글 존재여부 확인
+        this.validateExists(seq);
+
         return boardMapper.findById(seq);
     }
 
@@ -98,10 +94,9 @@ public class BoardService {
      */
     @Transactional
     public Board update(Long seq, Board board) {
-        // 존재하지 않는 게시글이면 예외 처리
-        if (!boardMapper.existsById(seq)) {
-            throw new IllegalArgumentException("게시글이 존재하지 않습니다.");
-        }
+        //게시글 존재여부 확인
+        this.validateExists(seq);
+
         Board befBoard = boardMapper.findById(seq);
 
         befBoard.update(
@@ -129,12 +124,24 @@ public class BoardService {
         }
 
         Board deleteBoard = boardMapper.findById(seq);
-        if(!passwordEncoder.matches(deleteCondition.getPassword(),deleteBoard.getPassword())){
+        if (!passwordEncoder.matches(deleteCondition.getPassword(), deleteBoard.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
         boardMapper.delete(seq);
 
         return deleteBoard;
+    }
+
+    /**
+     * 게시글이 존재하는지 검증한다.
+     *
+     * @param seq 검증할 게시글 번호
+     * @throws IllegalArgumentException 존재하지 않는 게시글 번호인 경우
+     */
+    public void validateExists(Long seq) {
+        if (!boardMapper.existsById(seq)) {
+            throw new IllegalArgumentException("게시글이 존재하지 않습니다.");
+        }
     }
 }
