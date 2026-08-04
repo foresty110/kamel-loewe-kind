@@ -32,6 +32,19 @@
 
     <div class="view-content" th:text="${boardDetail.content}"></div>
 
+    <div class="view-attachments" th:if="${not #lists.isEmpty(attachmentList)}">
+        <p class="attachment-heading">📎 첨부파일 <span th:text="${#lists.size(attachmentList)}"></span></p>
+        <ul class="view-attachment-list">
+            <li class="view-attachment-item" th:each="attachment : ${attachmentList}">
+                <a class="attachment-link" th:href="@{/attachment/{id}(id=${attachment.id})}">
+                    <span th:text="${#strings.toLowerCase(#strings.substringAfter(attachment.originalFileName, '.')) == 'pdf'} ? '📄' : '🖼️'"></span>
+                    <span th:text="${attachment.originalFileName}"></span>
+                </a>
+                <span class="attachment-file-meta attachment-file-size" th:attr="data-size=${attachment.size}"></span>
+            </li>
+        </ul>
+    </div>
+
     <div class="view-comments" th:data-id="${boardDetail.id}">
         <p class="comment-heading" th:text="'댓글 ' + ${#lists.size(commentList)}"></p>
         <div class="comment-list">
@@ -155,6 +168,24 @@
         var pad = function (n) { return String(n).padStart(2, '0'); };
         return d.getFullYear() + '.' + pad(d.getMonth() + 1) + '.' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
     }
+
+    function formatFileSize(bytes) {
+        if (bytes < 1024) {
+            return bytes + ' B';
+        }
+        var units = ['KB', 'MB', 'GB'];
+        var value = bytes;
+        var unitIndex = -1;
+        do {
+            value /= 1024;
+            unitIndex++;
+        } while (value >= 1024 && unitIndex < units.length - 1);
+        return value.toFixed(1) + ' ' + units[unitIndex];
+    }
+
+    document.querySelectorAll('.attachment-file-size').forEach(function (el) {
+        el.textContent = formatFileSize(Number(el.dataset.size));
+    });
 
     function submitDelete() {
         var layer = document.getElementById('deleteConfirmLayer');
