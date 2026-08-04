@@ -161,13 +161,13 @@ public class AttachmentService {
     }
 
     /**
-     * 게시글에서 첨부파일을 제거한다.
+     * 지정한 첨부파일들을 게시글에서 제거한다.
      *
      * @param boardId       첨부파일이 속한 게시글 번호
      * @param attachmentIds 제거할 첨부파일 번호 목록
      */
     @Transactional
-    public void removeFromBoard(Long boardId, List<Long> attachmentIds) {
+    public void removeByIds(Long boardId, List<Long> attachmentIds) {
         //삭제할 첨부파일 ID 목록이 비어있지 않은지 확인
         if (attachmentIds == null || attachmentIds.isEmpty()) {
             return;
@@ -189,6 +189,28 @@ public class AttachmentService {
         //파일의 메타데이터 삭제
         attachmentMapper.deleteByIds(
                 ownedAttachments.stream().map(Attachment::getId).toList());
+    }
+
+    /**
+     * 게시글에 속한 첨부파일을 전부 삭제한다.
+     *
+     * @param boardId 첨부파일이 속한 게시글 번호
+     */
+    @Transactional
+    public void removeAllByBoardId(Long boardId) {
+        List<Attachment> attachments = attachmentMapper.findAllByBoardId(boardId);
+
+        //게시글에 속한 첨부파일이 없을 경우 즉시 종료
+        if (attachments.isEmpty()) {
+            return;
+        }
+
+        //저장 경로의 실제 파일 삭제
+        attachments.forEach(attachment -> deleteFile(attachment.getStoredPath()));
+
+        //파일의 메타데이터 삭제
+        attachmentMapper.deleteByIds(
+                attachments.stream().map(Attachment::getId).toList());
     }
 
     /**

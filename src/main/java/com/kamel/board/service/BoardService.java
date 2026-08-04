@@ -116,7 +116,7 @@ public class BoardService {
         boardMapper.update(befBoard);
 
         //게시글에 속했지만 삭제된 이미지를 제거
-        attachmentService.removeFromBoard(id, removeAttachmentIds);
+        attachmentService.removeByIds(id, removeAttachmentIds);
 
         //새로 등록된 이미지를 게시판과 연결
         attachmentService.linkToBoard(id, newAttachmentIds);
@@ -131,6 +131,7 @@ public class BoardService {
      * @return 삭제 대상 게시글 정보
      * @throws IllegalArgumentException 존재하지 않는 게시글 번호인 경우
      */
+    @Transactional
     public Board delete(Long id, BoardDeleteCondition deleteCondition) {
         // 존재하지 않는 게시글이면 예외 처리
         if (!boardMapper.existsById(id)) {
@@ -141,6 +142,9 @@ public class BoardService {
         if (!passwordEncoder.matches(deleteCondition.getPassword(), deleteBoard.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
+
+        //게시글에 속한 첨부파일을 먼저 제거
+        attachmentService.removeAllByBoardId(id);
 
         boardMapper.delete(id);
 
