@@ -4,6 +4,8 @@ import com.kamel.board.entity.Attachment;
 import com.kamel.board.mapper.AttachmentMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -12,6 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,6 +23,7 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
@@ -97,7 +102,7 @@ public class AttachmentService {
     /**
      * 첨부파일과 게시글을 연결한다
      *
-     * @param boardId 게시글 번호
+     * @param boardId       게시글 번호
      * @param attachmentIds 첨부파일 번호 목록
      */
     @Transactional
@@ -107,5 +112,52 @@ public class AttachmentService {
             return;
         }
         attachmentMapper.linkToBoard(boardId, attachmentIds);
+    }
+
+    /**
+     * 첨부파일을 조회한다.
+     *
+     * @param attachmentId 첨부파일 번호
+     */
+    public Resource getOne(Long attachmentId) {
+
+        if (!attachmentMapper.existsById(attachmentId)) {
+            throw new IllegalArgumentException("첨부파일이 없습니다.");
+        }
+
+        Attachment file = attachmentMapper.findById(attachmentId);
+
+        Path path = Paths.get(uploadDir).normalize(); //저장 경로를 담은 문자열을 path 객체로 변경
+        Path target = path.resolve(file.getStoredPath()).normalize(); // 저장 경로와 파일 이름을 합쳐 실제 경로 반환
+
+        //보안을 위해 저장 경로 일치 검증
+        if (!target.startsWith(path)) {
+            throw new SecurityException("잘못된 경로 접근");
+        }
+
+        //데이터가 디스크,s3등 저장된 곳과 상관없이 다운로드 처리가 가능하도록 만든 인터페이스
+        Resource resource;
+        try {
+            resource = new UrlResource(target.toUri());
+        } catch (MalformedURLException e) {
+            throw new UncheckedIOException(e);
+        }
+
+        // 실제 파일 존재 여부 확인 및 권한 검증
+        if (!resource.exists() || !resource.isReadable()) {
+            throw new NoSuchElementException("파일이 존재하지 않음");
+        }
+
+        return resource;
+    }
+
+    /**
+     * 게시글에 속한 첨부파일 목록을 조회한다.
+     *
+     * @param boardId 조회할 게시글 번호
+     * @return 게시글에 속한 첨부파일 목록
+     */
+    public List<Attachment> findAllByBoardId(Long boardId) {
+        return attachmentMapper.findAllByBoardId(boardId);
     }
 }

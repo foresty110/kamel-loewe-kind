@@ -1,9 +1,11 @@
 package com.kamel.board.controller;
 
 import com.kamel.board.dto.*;
+import com.kamel.board.entity.Attachment;
 import com.kamel.board.entity.Board;
 import com.kamel.board.entity.Category;
 import com.kamel.board.entity.Comment;
+import com.kamel.board.service.AttachmentService;
 import com.kamel.board.service.BoardService;
 import com.kamel.board.service.CategoryService;
 import com.kamel.board.service.CommentService;
@@ -25,6 +27,7 @@ public class BoardController {
 
     private final CategoryService categoryService; // 카테고리 서비스
     private final BoardService boardService; // 게시글 서비스
+    private final AttachmentService attachmentService; // 첨부파일 서비스
     private final CommentService commentService; // 댓글 서비스
 
     /**
@@ -60,12 +63,15 @@ public class BoardController {
 
         Board board = boardService.getDetail(boardId);
         Category category = categoryService.getOne(board.getCategoryId());
+        List<Attachment> attachmentList = attachmentService.findAllByBoardId(boardId);
         List<Comment> commentList = commentService.getAll(boardId);
 
         model.addAttribute("boardDetail", BoardDetailResponseDto.from(board));
         model.addAttribute("categoryName", category.getName());
         model.addAttribute("commentList",
-                commentList.stream().map(CommentDetailResponseDto::from).toList());
+                    commentList.stream().map(CommentDetailResponseDto::from).toList());
+        model.addAttribute("attachmentList",
+                    attachmentList.stream().map(AttachmentDetailResponseDto::from).toList());
 
         return "board-view";
     }

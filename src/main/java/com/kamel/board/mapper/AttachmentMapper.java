@@ -34,4 +34,19 @@ public interface AttachmentMapper {
      * @param attachmentIds 연결할 첨부파일 번호 목록
      */
     void linkToBoard(Long boardId,List<Long> attachmentIds);
+
+    /**
+     * 첨부파일 존재 여부를 확인한다
+     *
+     * @param attachmentId 확인할 첨부파일 번호
+     */
+    boolean existsById(Long attachmentId);
+
+    /**
+     * 게시글에 속한 첨부파일 목록을 조회한다.
+     *
+     * @param boardId 조회할 게시글 번호
+     * @return 게시글에 속한 첨부파일 목록
+     */
+    List<Attachment> findAllByBoardId(Long boardId);
 }

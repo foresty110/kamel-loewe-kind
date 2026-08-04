@@ -30,6 +30,22 @@
         WHERE id = #{id}
     </select>
 
+    <select id="existsById"
+            parameterType="Long"
+            resultType="boolean">
+        SELECT EXISTS(
+            SELECT 1 FROM attachment WHERE id = #{attachmentId}
+        )
+    </select>
+
+    <select id="findAllByBoardId"
+            parameterType="Long"
+            resultType="Attachment">
+        SELECT *
+        FROM attachment
+        WHERE board_id = #{boardId}
+    </select>
+
     <update id="linkToBoard">
         UPDATE attachment
         SET board_id = #{boardId}
@@ -38,4 +54,5 @@
             #{attachmentId}
         </foreach>
     </update>
+
 </mapper>
