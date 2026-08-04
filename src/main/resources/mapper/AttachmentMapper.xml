@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kamel.board.mapper.AttachmentMapper">
+
+    <insert id="insert"
+            parameterType="Attachment"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO attachment (
+            original_filename,
+            stored_path,
+            content_Type,
+            size
+        ) VALUES (
+                     #{originalFileName},
+                     #{storedPath},
+                     #{contentType},
+                     #{size}
+                 )
+
+    </insert>
+
+    <select id="findById"
+            parameterType="Long"
+            resultType="Attachment">
+        SELECT *
+        FROM attachment
+        WHERE id = #{id}
+    </select>
+
+    <update id="linkToBoard">
+        UPDATE attachment
+        SET board_id = #{boardId}
+        WHERE id IN
+        <foreach item="attachmentId" collection="attachmentIds" open="(" separator="," close=")">
+            #{attachmentId}
+        </foreach>
+    </update>
+</mapper>

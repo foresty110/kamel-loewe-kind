@@ -27,7 +27,6 @@ public class BoardController {
     private final BoardService boardService; // 게시글 서비스
     private final CommentService commentService; // 댓글 서비스
 
-
     /**
      * 게시판 목록 화면을 조회한다.
      *
@@ -97,7 +96,7 @@ public class BoardController {
     @PostMapping("/board")
     public ResponseEntity<BoardCreateResponseDto> create(@Valid @RequestBody BoardCreateRequestDto requestDto, Model model) {
 
-        Board board = boardService.create(requestDto.toEntity());
+        Board board = boardService.create(requestDto.toEntity(),requestDto.getAttachmentIds());
         BoardCreateResponseDto responseDto = BoardCreateResponseDto.from(board);
 
         return ResponseEntity.ok(responseDto);

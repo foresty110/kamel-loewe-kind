@@ -3,7 +3,6 @@ package com.kamel.board.service;
 import com.kamel.board.dto.BoardListResponseDto;
 import com.kamel.board.entity.Board;
 import com.kamel.board.mapper.BoardMapper;
-import com.kamel.board.mapper.CategoryMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,6 +19,7 @@ import java.util.List;
 public class BoardService {
     private final BoardMapper boardMapper; // 게시글 매퍼
     private final CategoryService categoryService; // 카테고리 서비스
+    private final AttachmentService attachmentService; // 첨부파일 서비스
     private final PasswordEncoder passwordEncoder; // 비밀번호 암호화
 
     /**
@@ -53,11 +53,13 @@ public class BoardService {
     /**
      * 전달받은 정보로 게시글을 생성한다.
      *
-     * @param board 생성할 게시글 정보
+     * @param board         생성할 게시글 정보
+     * @param attachmentIds
      * @return 생성한 게시글
      * @throws IllegalArgumentException 존재하지 않는 카테고리 번호인 경우
      */
-    public Board create(Board board) {
+    @Transactional
+    public Board create(Board board, List<Long> attachmentIds) {
 
         //카데고리 존재 여부 확인
         categoryService.validateExists(board.getCategoryId());
@@ -67,6 +69,9 @@ public class BoardService {
 
         // DB 저장
         boardMapper.insert(board);
+
+        //첨부파일과 게시글을 연결
+        attachmentService.linkToBoard(board.getId(),attachmentIds);
 
         return board;
     }

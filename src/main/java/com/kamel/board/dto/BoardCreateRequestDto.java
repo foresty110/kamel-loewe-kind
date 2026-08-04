@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 새로 만들 게시글의 정보를 담은 요청 DTO
@@ -35,6 +36,8 @@ public class BoardCreateRequestDto {
 
     @NotBlank(message = "내용을 입력해주세요.")
     private String content; // 내용
+
+    private List<Long> attachmentIds; //첨부파일 목록
 
     /**
      * 이 요청 DTO를 {@link Board} 엔티티로 변환한다.

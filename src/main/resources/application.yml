@@ -10,6 +10,13 @@ spring:
   sql:
     init:
       mode: always
+  servlet:
+    multipart:
+      max-file-size: 10MB      # 파일 1개 최대 크기
+      max-request-size: 50MB   # 업로드 요청 합계 최대 크기
+
+file:
+  upload-dir: /tmp/board-attachments  # 로컬/배포 공통으로 쓰기 가능한 경로
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
