@@ -1,9 +1,11 @@
 package com.kamel.board.controller;
 
 import com.kamel.board.dto.*;
+import com.kamel.board.entity.Attachment;
 import com.kamel.board.entity.Board;
 import com.kamel.board.entity.Category;
 import com.kamel.board.entity.Comment;
+import com.kamel.board.service.AttachmentService;
 import com.kamel.board.service.BoardService;
 import com.kamel.board.service.CategoryService;
 import com.kamel.board.service.CommentService;
@@ -25,8 +27,8 @@ public class BoardController {
 
     private final CategoryService categoryService; // 카테고리 서비스
     private final BoardService boardService; // 게시글 서비스
+    private final AttachmentService attachmentService; // 첨부파일 서비스
     private final CommentService commentService; // 댓글 서비스
-
 
     /**
      * 게시판 목록 화면을 조회한다.
@@ -52,8 +54,8 @@ public class BoardController {
     /**
      * 게시글 상세 화면을 조회한다.
      *
-     * @param boardId   조회할 게시글 번호
-     * @param model 뷰로 전달할 데이터
+     * @param boardId 조회할 게시글 번호
+     * @param model   뷰로 전달할 데이터
      * @return 게시판 상세 뷰 이름
      */
     @GetMapping("/board/{boardId}")
@@ -61,12 +63,15 @@ public class BoardController {
 
         Board board = boardService.getDetail(boardId);
         Category category = categoryService.getOne(board.getCategoryId());
+        List<Attachment> attachmentList = attachmentService.findAllByBoardId(boardId);
         List<Comment> commentList = commentService.getAll(boardId);
 
         model.addAttribute("boardDetail", BoardDetailResponseDto.from(board));
         model.addAttribute("categoryName", category.getName());
         model.addAttribute("commentList",
                 commentList.stream().map(CommentDetailResponseDto::from).toList());
+        model.addAttribute("attachmentList",
+                attachmentList.stream().map(AttachmentDetailResponseDto::from).toList());
 
         return "board-view";
     }
@@ -97,7 +102,7 @@ public class BoardController {
     @PostMapping("/board")
     public ResponseEntity<BoardCreateResponseDto> create(@Valid @RequestBody BoardCreateRequestDto requestDto, Model model) {
 
-        Board board = boardService.create(requestDto.toEntity());
+        Board board = boardService.create(requestDto.toEntity(), requestDto.getAttachmentIds());
         BoardCreateResponseDto responseDto = BoardCreateResponseDto.from(board);
 
         return ResponseEntity.ok(responseDto);
@@ -106,8 +111,8 @@ public class BoardController {
     /**
      * 게시글 수정 화면을 조회한다.
      *
-     * @param boardId   수정할 게시글 번호
-     * @param model 뷰로 전달할 데이터
+     * @param boardId 수정할 게시글 번호
+     * @param model   뷰로 전달할 데이터
      * @return 게시판 상세 뷰 이름
      */
     @GetMapping("/board/{boardId}/edit")
@@ -116,25 +121,30 @@ public class BoardController {
         List<CategoryResponseDto> categoryList = categoryService.getAll().stream()
                 .map(CategoryResponseDto::from)
                 .toList();
-
+        List<AttachmentEditResponseDto> attachmentDtoList = attachmentService.findAllByBoardId(boardId).stream()
+                .map(AttachmentEditResponseDto::from)
+                .toList();
         BoardEditResponseDto responseDto = BoardEditResponseDto.from(boardService.edit(boardId));
 
         model.addAttribute("categoryList", categoryList);
         model.addAttribute("boardDetail", responseDto);
+        model.addAttribute("attachmentList", attachmentDtoList);
+
         return "board-edit";
     }
 
     /**
      * 게시글을 수정 요청한다.
      *
-     * @param boardId   수정할 게시글 번호
-     * @param model 뷰로 전달할 데이터
+     * @param boardId 수정할 게시글 번호
+     * @param model   뷰로 전달할 데이터
      * @return 게시판 상세 뷰 이름
      */
     @PutMapping("/board/{boardId}")
     public ResponseEntity<Void> update(@PathVariable Long boardId, @Valid @RequestBody BoardUpdateRequestDto requestDto, Model model) {
 
-        Board board = boardService.update(boardId, requestDto.toEntity());
+        Board board = boardService.update(boardId, requestDto.toEntity(),
+                requestDto.getNewAttachmentIds(), requestDto.getRemoveAttachmentIds());
         BoardUpdateResponseDto responseDto = BoardUpdateResponseDto.from(board);
 
         return ResponseEntity.noContent().build();

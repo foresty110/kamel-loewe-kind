@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.List;
 
 /**
  * 게시글 수정 요청 DTO
@@ -24,6 +25,10 @@ public class BoardUpdateRequestDto {
 
     @NotBlank(message = "내용을 입력해주세요.")
     private String content; // 내용
+
+    private List<Long> newAttachmentIds; // 새로 연결할 첨부파일 번호 목록
+
+    private List<Long> removeAttachmentIds; // 게시글에서 제거할 기존 첨부파일 번호 목록
 
     /**
      * 이 요청 DTO를 {@link Board} 엔티티로 변환한다.

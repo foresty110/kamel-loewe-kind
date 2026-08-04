@@ -266,6 +266,53 @@ a {
   min-height: 120px;
 }
 
+.view-attachments {
+  margin-top: 20px;
+}
+
+.view-attachments .attachment-heading {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.view-attachment-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.view-attachment-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.attachment-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-line);
+  border-radius: 8px;
+  padding: 6px 12px;
+}
+
+.attachment-link:hover {
+  text-decoration: underline;
+}
+
+.attachment-file-meta {
+  font-size: 12px;
+  color: var(--muted);
+}
+
 .view-comments {
   margin-top: 28px;
 }
@@ -446,4 +493,133 @@ a {
   justify-content: flex-end;
   gap: 8px;
   margin-top: 24px;
+}
+
+/* ---------- board-create: 첨부파일 ---------- */
+
+.attachment-hint {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0 0 10px;
+}
+
+.attachment-slots {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.attachment-slot-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  color: var(--muted);
+  background: #fafafb;
+  cursor: pointer;
+}
+
+.attachment-slot-picker input[type="file"] {
+  display: none;
+}
+
+.attachment-slot-picker.disabled {
+  cursor: not-allowed;
+  opacity: .5;
+}
+
+.attachment-slot.filled {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fafafb;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 13px;
+}
+
+.attachment-slot.filled .attachment-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ink);
+}
+
+.attachment-status {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 2px 9px;
+  white-space: nowrap;
+}
+
+.attachment-status.uploading {
+  color: var(--muted);
+  background: #f1f2f4;
+  border: 1px solid var(--line);
+}
+
+.attachment-status.done {
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-line);
+}
+
+.attachment-status.error {
+  color: #dc2626;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.attachment-remove {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+.attachment-remove:hover {
+  color: var(--ink);
+}
+
+/* ---------- board-edit: 기존 첨부파일 ---------- */
+
+.attachment-existing-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.attachment-existing-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fafafb;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 10px;
+}
+
+.attachment-existing-row .attachment-link {
+  flex-shrink: 0;
+}
+
+.attachment-existing-row .attachment-file-meta {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

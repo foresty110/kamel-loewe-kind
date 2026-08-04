@@ -67,6 +67,14 @@
             </div>
         </div>
 
+        <div class="form-row">
+            <span class="form-label">첨부파일</span>
+            <div class="form-body">
+                <p class="attachment-hint">최대 3개까지 첨부할 수 있어요 (jpg, jpeg, png, pdf / 개당 10MB 이하)</p>
+                <div class="attachment-slots" id="attachmentSlots"></div>
+            </div>
+        </div>
+
         <div class="form-footer">
             <a th:href="@{/board}" class="btn-secondary">취소</a>
             <button type="submit" class="btn-primary">등록</button>
@@ -76,6 +84,135 @@
 </div>
 
 <script th:inline="none">
+    var MAX_ATTACHMENTS = 3;
+    var MAX_ATTACHMENT_SIZE = 10 * 1024 * 1024; // 10MB
+    var ALLOWED_ATTACHMENT_EXT = ['jpg', 'jpeg', 'png', 'pdf'];
+
+    var attachments = [null, null, null]; // 슬롯별 { file, name, status: 'uploading'|'done'|'error', attachmentId }
+
+    var attachmentSlots = document.getElementById('attachmentSlots');
+
+    function getAttachmentExtension(fileName) {
+        var idx = fileName.lastIndexOf('.');
+        if (idx === -1) {
+            return '';
+        }
+        return fileName.slice(idx + 1).toLowerCase();
+    }
+
+    function firstEmptySlotIndex() {
+        for (var i = 0; i < attachments.length; i++) {
+            if (attachments[i] === null) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    function uploadAttachment(index) {
+        var entry = attachments[index];
+        var formData = new FormData();
+        formData.append('file', entry.file);
+
+        fetch('/attachment', {
+            method: 'POST',
+            body: formData
+        }).then(function (res) {
+            if (!res.ok) {
+                throw new Error('업로드 실패');
+            }
+            return res.json();
+        }).then(function (data) {
+            entry.status = 'done';
+            entry.attachmentId = data.id;
+            renderAttachmentSlots();
+        }).catch(function () {
+            entry.status = 'error';
+            renderAttachmentSlots();
+        });
+    }
+
+    function handleSlotFileSelected(index, file) {
+        var ext = getAttachmentExtension(file.name);
+        var entry = {
+            file: file,
+            name: file.name,
+            status: 'uploading',
+            attachmentId: null
+        };
+
+        if (ALLOWED_ATTACHMENT_EXT.indexOf(ext) === -1 || file.size > MAX_ATTACHMENT_SIZE) {
+            entry.status = 'error';
+            attachments[index] = entry;
+            renderAttachmentSlots();
+            return;
+        }
+
+        attachments[index] = entry;
+        renderAttachmentSlots();
+        uploadAttachment(index);
+    }
+
+    function renderAttachmentSlots() {
+        attachmentSlots.innerHTML = '';
+        var activeIndex = firstEmptySlotIndex();
+
+        attachments.forEach(function (entry, index) {
+            var row = document.createElement('div');
+            row.className = 'attachment-slot';
+
+            if (entry) {
+                row.classList.add('filled');
+
+                var nameSpan = document.createElement('span');
+                nameSpan.className = 'attachment-name';
+                nameSpan.textContent = entry.name;
+                row.appendChild(nameSpan);
+
+                var statusSpan = document.createElement('span');
+                statusSpan.className = 'attachment-status ' + entry.status;
+                statusSpan.textContent =
+                    entry.status === 'uploading' ? '업로드 중' :
+                    entry.status === 'done' ? '완료' : '실패';
+                row.appendChild(statusSpan);
+
+                var removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'attachment-remove';
+                removeBtn.textContent = '✕';
+                removeBtn.addEventListener('click', function () {
+                    attachments[index] = null;
+                    renderAttachmentSlots();
+                });
+                row.appendChild(removeBtn);
+            } else {
+                var label = document.createElement('label');
+                label.className = 'attachment-slot-picker' + (index === activeIndex ? '' : ' disabled');
+
+                var input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.jpg,.jpeg,.png,.pdf';
+                input.disabled = index !== activeIndex;
+                input.addEventListener('change', function () {
+                    if (input.files[0]) {
+                        handleSlotFileSelected(index, input.files[0]);
+                    }
+                });
+
+                var labelText = document.createElement('span');
+                labelText.textContent = '파일 선택';
+
+                label.appendChild(input);
+                label.appendChild(labelText);
+                row.appendChild(label);
+            }
+
+            attachmentSlots.appendChild(row);
+        });
+    }
+
+    renderAttachmentSlots();
+
     document.getElementById('createForm').addEventListener('submit', function (e) {
         e.preventDefault();
 
@@ -105,6 +242,14 @@
             alert('내용을 입력해 주세요.');
             return;
         }
+        if (attachments.some(function (a) { return a && a.status === 'uploading'; })) {
+            alert('첨부파일 업로드가 끝난 후 등록해 주세요.');
+            return;
+        }
+
+        var attachmentIds = attachments
+            .filter(function (a) { return a && a.status === 'done'; })
+            .map(function (a) { return a.attachmentId; });
 
         fetch('/board', {
             method: 'POST',
@@ -114,7 +259,8 @@
                 author: author,
                 password: password,
                 title: title,
-                content: content
+                content: content,
+                attachmentIds: attachmentIds
             })
         }).then(function (res) {
             if (res.ok) {
