@@ -2,7 +2,6 @@ package com.kamel.board.mapper;
 
 import com.kamel.board.entity.Attachment;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -49,4 +48,11 @@ public interface AttachmentMapper {
      * @return 게시글에 속한 첨부파일 목록
      */
     List<Attachment> findAllByBoardId(Long boardId);
+
+    /**
+     * id 목록에 해당하는 첨부파일을 삭제한다.
+     *
+     * @param attachmentIds 삭제할 첨부파일 번호 목록
+     */
+    void deleteByIds(List<Long> attachmentIds);
 }

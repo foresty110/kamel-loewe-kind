@@ -54,8 +54,8 @@ public class BoardController {
     /**
      * 게시글 상세 화면을 조회한다.
      *
-     * @param boardId   조회할 게시글 번호
-     * @param model 뷰로 전달할 데이터
+     * @param boardId 조회할 게시글 번호
+     * @param model   뷰로 전달할 데이터
      * @return 게시판 상세 뷰 이름
      */
     @GetMapping("/board/{boardId}")
@@ -69,9 +69,9 @@ public class BoardController {
         model.addAttribute("boardDetail", BoardDetailResponseDto.from(board));
         model.addAttribute("categoryName", category.getName());
         model.addAttribute("commentList",
-                    commentList.stream().map(CommentDetailResponseDto::from).toList());
+                commentList.stream().map(CommentDetailResponseDto::from).toList());
         model.addAttribute("attachmentList",
-                    attachmentList.stream().map(AttachmentDetailResponseDto::from).toList());
+                attachmentList.stream().map(AttachmentDetailResponseDto::from).toList());
 
         return "board-view";
     }
@@ -102,7 +102,7 @@ public class BoardController {
     @PostMapping("/board")
     public ResponseEntity<BoardCreateResponseDto> create(@Valid @RequestBody BoardCreateRequestDto requestDto, Model model) {
 
-        Board board = boardService.create(requestDto.toEntity(),requestDto.getAttachmentIds());
+        Board board = boardService.create(requestDto.toEntity(), requestDto.getAttachmentIds());
         BoardCreateResponseDto responseDto = BoardCreateResponseDto.from(board);
 
         return ResponseEntity.ok(responseDto);
@@ -111,8 +111,8 @@ public class BoardController {
     /**
      * 게시글 수정 화면을 조회한다.
      *
-     * @param boardId   수정할 게시글 번호
-     * @param model 뷰로 전달할 데이터
+     * @param boardId 수정할 게시글 번호
+     * @param model   뷰로 전달할 데이터
      * @return 게시판 상세 뷰 이름
      */
     @GetMapping("/board/{boardId}/edit")
@@ -121,25 +121,30 @@ public class BoardController {
         List<CategoryResponseDto> categoryList = categoryService.getAll().stream()
                 .map(CategoryResponseDto::from)
                 .toList();
-
+        List<AttachmentEditResponseDto> attachmentDtoList = attachmentService.findAllByBoardId(boardId).stream()
+                .map(AttachmentEditResponseDto::from)
+                .toList();
         BoardEditResponseDto responseDto = BoardEditResponseDto.from(boardService.edit(boardId));
 
         model.addAttribute("categoryList", categoryList);
         model.addAttribute("boardDetail", responseDto);
+        model.addAttribute("attachmentList", attachmentDtoList);
+
         return "board-edit";
     }
 
     /**
      * 게시글을 수정 요청한다.
      *
-     * @param boardId   수정할 게시글 번호
-     * @param model 뷰로 전달할 데이터
+     * @param boardId 수정할 게시글 번호
+     * @param model   뷰로 전달할 데이터
      * @return 게시판 상세 뷰 이름
      */
     @PutMapping("/board/{boardId}")
     public ResponseEntity<Void> update(@PathVariable Long boardId, @Valid @RequestBody BoardUpdateRequestDto requestDto, Model model) {
 
-        Board board = boardService.update(boardId, requestDto.toEntity());
+        Board board = boardService.update(boardId, requestDto.toEntity(),
+                requestDto.getNewAttachmentIds(), requestDto.getRemoveAttachmentIds());
         BoardUpdateResponseDto responseDto = BoardUpdateResponseDto.from(board);
 
         return ResponseEntity.noContent().build();

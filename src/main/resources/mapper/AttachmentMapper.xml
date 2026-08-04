@@ -55,4 +55,12 @@
         </foreach>
     </update>
 
+    <delete id="deleteByIds">
+        DELETE FROM attachment
+        WHERE id IN
+        <foreach item="attachmentId" collection="attachmentIds" open="(" separator="," close=")">
+            #{attachmentId}
+        </foreach>
+    </delete>
+
 </mapper>

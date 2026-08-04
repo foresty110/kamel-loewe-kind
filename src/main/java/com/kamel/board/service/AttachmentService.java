@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -159,5 +158,57 @@ public class AttachmentService {
      */
     public List<Attachment> findAllByBoardId(Long boardId) {
         return attachmentMapper.findAllByBoardId(boardId);
+    }
+
+    /**
+     * 게시글에서 첨부파일을 제거한다.
+     *
+     * @param boardId       첨부파일이 속한 게시글 번호
+     * @param attachmentIds 제거할 첨부파일 번호 목록
+     */
+    @Transactional
+    public void removeFromBoard(Long boardId, List<Long> attachmentIds) {
+        //삭제할 첨부파일 ID 목록이 비어있지 않은지 확인
+        if (attachmentIds == null || attachmentIds.isEmpty()) {
+            return;
+        }
+
+        //게시글에 실제로 속한 첨부파일만 추출
+        List<Attachment> ownedAttachments = attachmentMapper.findAllByBoardId(boardId).stream()
+                .filter(attachment -> attachmentIds.contains(attachment.getId()))
+                .toList();
+
+        //게시글에 속한 첨부파일이 없을 경우 즉시 종료
+        if (ownedAttachments.isEmpty()) {
+            return;
+        }
+
+        //저장 경로의 실제 파일 삭제
+        ownedAttachments.forEach(attachment -> deleteFile(attachment.getStoredPath()));
+
+        //파일의 메타데이터 삭제
+        attachmentMapper.deleteByIds(
+                ownedAttachments.stream().map(Attachment::getId).toList());
+    }
+
+    /**
+     * 저장 경로의 실제 파일을 삭제한다.
+     *
+     * @param storedPath 삭제할 파일의 상대 경로
+     */
+    private void deleteFile(String storedPath) {
+        Path path = Paths.get(uploadDir).normalize(); //상대 저장 경로 추출
+        Path target = path.resolve(storedPath).normalize(); //실제 저장 경로 생성
+
+        //보안을 위해 저장 경로 일치 검증
+        if (!target.startsWith(path)) {
+            throw new SecurityException("잘못된 경로 접근");
+        }
+
+        try {
+            Files.deleteIfExists(target); //파일삭제
+        } catch (IOException e) {
+            throw new UncheckedIOException("파일 삭제 실패", e);
+        }
     }
 }
