@@ -592,3 +592,34 @@ a {
 .attachment-remove:hover {
   color: var(--ink);
 }
+
+/* ---------- board-edit: 기존 첨부파일 ---------- */
+
+.attachment-existing-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.attachment-existing-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fafafb;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 10px;
+}
+
+.attachment-existing-row .attachment-link {
+  flex-shrink: 0;
+}
+
+.attachment-existing-row .attachment-file-meta {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
