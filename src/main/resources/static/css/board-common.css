@@ -447,3 +447,101 @@ a {
   gap: 8px;
   margin-top: 24px;
 }
+
+/* ---------- board-create: 첨부파일 ---------- */
+
+.attachment-hint {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0 0 10px;
+}
+
+.attachment-slots {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.attachment-slot-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  color: var(--muted);
+  background: #fafafb;
+  cursor: pointer;
+}
+
+.attachment-slot-picker input[type="file"] {
+  display: none;
+}
+
+.attachment-slot-picker.disabled {
+  cursor: not-allowed;
+  opacity: .5;
+}
+
+.attachment-slot.filled {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fafafb;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 13px;
+}
+
+.attachment-slot.filled .attachment-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ink);
+}
+
+.attachment-status {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 2px 9px;
+  white-space: nowrap;
+}
+
+.attachment-status.uploading {
+  color: var(--muted);
+  background: #f1f2f4;
+  border: 1px solid var(--line);
+}
+
+.attachment-status.done {
+  color: var(--accent);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-line);
+}
+
+.attachment-status.error {
+  color: #dc2626;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.attachment-remove {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+
+.attachment-remove:hover {
+  color: var(--ink);
+}
