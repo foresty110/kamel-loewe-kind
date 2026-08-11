@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>공지사항 - 보기</title>
+<link rel="stylesheet" th:href="@{/css/board-common.css}">
+</head>
+<body>
+
+<div style="max-width: 1080px; margin: 0 auto; padding: 32px 24px 60px;">
+
+    <p class="page-title">공지사항 - 보기</p>
+
+    <div class="view-meta-row">
+        <span class="view-author" th:text="${boardDetail.author}"></span>
+        <span class="view-dates">
+            등록일 <span th:text="${#temporals.format(boardDetail.createdAt, 'yyyy.MM.dd HH:mm')}"></span>
+            <th:block th:if="${boardDetail.updatedAt != null}">
+                <span class="sep">·</span>수정일 <span th:text="${#temporals.format(boardDetail.updatedAt, 'yyyy.MM.dd HH:mm')}"></span>
+            </th:block>
+        </span>
+    </div>
+
+    <div class="view-title-row">
+        <div class="view-title">
+            <span class="cat-pill" th:text="${categoryName}"></span>
+            <span th:text="${boardDetail.title}"></span>
+        </div>
+        <span class="view-views">조회수: <span th:text="${boardDetail.viewCount}"></span></span>
+    </div>
+
+    <div class="view-meeting-info">
+        <div class="info-card">
+            <p class="info-card-heading">모임 정보</p>
+            <ul class="info-list">
+                <li class="info-row">
+                    <span class="info-icon">📅</span>
+                    <span class="info-row-label">일시</span>
+                    <span class="info-row-value" th:text="${#temporals.format(noticeDetail.meetingAt, 'yyyy.MM.dd HH:mm')}"></span>
+                </li>
+                <li class="info-row">
+                    <span class="info-icon">📍</span>
+                    <span class="info-row-label">장소</span>
+                    <span class="info-row-value" th:text="${noticeDetail.location}"></span>
+                </li>
+                <li class="info-row">
+                    <span class="info-icon">📖</span>
+                    <span class="info-row-label">책</span>
+                    <span class="info-row-value" th:text="${noticeDetail.book} + ' / ' + ${noticeDetail.publisher}"></span>
+                </li>
+                <li class="info-row">
+                    <span class="info-icon">📝</span>
+                    <span class="info-row-label">읽어올 범위</span>
+                    <span class="info-row-value" th:text="${noticeDetail.pageStart} + '쪽 ~ ' + ${noticeDetail.pageEnd} + '쪽'"></span>
+                </li>
+                <li class="info-row">
+                    <span class="info-icon">💳</span>
+                    <span class="info-row-label">참가비용</span>
+                    <span class="info-row-value">
+                        <span th:text="${noticeDetail.fee != null} ? ${#numbers.formatInteger(noticeDetail.fee, 0, 'COMMA')} + '원' : '무료'"></span>
+                        <th:block th:if="${noticeDetail.feeDescription != null and not #strings.isEmpty(noticeDetail.feeDescription)}">
+                            <span class="info-sep">/</span><span th:text="${noticeDetail.feeDescription}"></span>
+                        </th:block>
+                    </span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="view-content" th:text="${boardDetail.content}"></div>
+
+    <div class="view-attachments" th:if="${not #lists.isEmpty(attachmentList)}">
+        <p class="attachment-heading">📎 첨부파일 <span th:text="${#lists.size(attachmentList)}"></span></p>
+        <ul class="view-attachment-list">
+            <li class="view-attachment-item" th:each="attachment : ${attachmentList}">
+                <a class="attachment-link" th:href="@{/attachment/{id}(id=${attachment.id})}">
+                    <span th:text="${#strings.toLowerCase(#strings.substringAfter(attachment.originalFileName, '.')) == 'pdf'} ? '📄' : '🖼️'"></span>
+                    <span th:text="${attachment.originalFileName}"></span>
+                </a>
+                <span class="attachment-file-meta attachment-file-size" th:attr="data-size=${attachment.size}"></span>
+            </li>
+        </ul>
+    </div>
+
+    <div class="view-comments" th:data-id="${boardDetail.id}">
+        <p class="comment-heading" th:text="'댓글 ' + ${#lists.size(commentList)}"></p>
+        <div class="comment-list">
+            <div class="comment-item" th:each="comment : ${commentList}">
+                <div class="comment-meta">
+                    <span class="comment-author" th:text="${comment.author}"></span>
+                    <span class="comment-date" th:text="${#temporals.format(comment.createdAt, 'yyyy.MM.dd HH:mm')}"></span>
+                </div>
+                <div class="comment-body" th:text="${comment.content}"></div>
+            </div>
+        </div>
+        <div class="comment-form">
+            <div class="field comment-author-field">
+                <input class="text-input" type="text" id="commentAuthor" placeholder="작성자" maxlength="20">
+            </div>
+            <textarea class="text-input comment-textarea" id="commentContent" placeholder="댓글을 입력해 주세요."></textarea>
+            <button type="button" class="btn-secondary" onclick="submitComment()">등록</button>
+        </div>
+    </div>
+
+    <div class="view-actions">
+        <a th:href="@{/board}" class="btn-secondary btn-dark">목록</a>
+        <a th:href="@{/board/{boardId}/edit(boardId=${boardDetail.id})}" class="btn-secondary">수정</a>
+        <button type="button" class="btn-secondary" onclick="openDeleteConfirm()">삭제</button>
+    </div>
+
+</div>
+
+<div class="layer-backdrop" id="deleteConfirmLayer" th:data-id="${boardDetail.id}" style="display:none;">
+    <div class="layer-card">
+        <p class="layer-title">비밀번호 확인</p>
+        <div class="field">
+            <input class="text-input" type="password" id="deletePassword" placeholder="비밀번호를 입력해 주세요.">
+        </div>
+        <div class="layer-footer">
+            <button type="button" class="btn-secondary" onclick="closeDeleteConfirm()">취소</button>
+            <button type="button" class="btn-primary" id="deleteConfirmBtn" disabled onclick="submitDelete()">확인</button>
+        </div>
+    </div>
+</div>
+
+<script th:inline="none">
+    function openDeleteConfirm() {
+        document.getElementById('deleteConfirmLayer').style.display = 'flex';
+    }
+    function closeDeleteConfirm() {
+        document.getElementById('deleteConfirmLayer').style.display = 'none';
+    }
+
+    document.getElementById('deletePassword').addEventListener('input', function (e) {
+        document.getElementById('deleteConfirmBtn').disabled = e.target.value.length === 0;
+    });
+
+    function submitComment() {
+        var wrapper = document.querySelector('.view-comments');
+        var id = wrapper.dataset.id;
+        var authorInput = document.getElementById('commentAuthor');
+        var contentInput = document.getElementById('commentContent');
+        var author = authorInput.value.trim();
+        var content = contentInput.value.trim();
+
+        if (author.length === 0) {
+            alert('작성자명을 입력해 주세요.');
+            return;
+        }
+        if (content.length === 0) {
+            alert('댓글 내용을 입력해 주세요.');
+            return;
+        }
+
+        fetch('/board/' + id + '/comments', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ author: author, content: content })
+        }).then(function (res) {
+            if (!res.ok) {
+                alert('댓글 등록에 실패했습니다.');
+                return;
+            }
+            res.json().then(function (comment) {
+                addCommentToList(comment);
+                authorInput.value = '';
+                contentInput.value = '';
+            });
+        });
+    }
+
+    function addCommentToList(comment) {
+        var list = document.querySelector('.comment-list');
+
+        var item = document.createElement('div');
+        item.className = 'comment-item';
+
+        var meta = document.createElement('div');
+        meta.className = 'comment-meta';
+
+        var authorEl = document.createElement('span');
+        authorEl.className = 'comment-author';
+        authorEl.textContent = comment.author;
+
+        var dateEl = document.createElement('span');
+        dateEl.className = 'comment-date';
+        dateEl.textContent = formatDateTime(comment.createdAt);
+
+        meta.appendChild(authorEl);
+        meta.appendChild(dateEl);
+
+        var body = document.createElement('div');
+        body.className = 'comment-body';
+        body.textContent = comment.content;
+
+        item.appendChild(meta);
+        item.appendChild(body);
+        list.appendChild(item);
+
+        document.querySelector('.comment-heading').textContent = '댓글 ' + list.children.length;
+    }
+
+    function formatDateTime(iso) {
+        var d = new Date(iso);
+        var pad = function (n) { return String(n).padStart(2, '0'); };
+        return d.getFullYear() + '.' + pad(d.getMonth() + 1) + '.' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes < 1024) {
+            return bytes + ' B';
+        }
+        var units = ['KB', 'MB', 'GB'];
+        var value = bytes;
+        var unitIndex = -1;
+        do {
+            value /= 1024;
+            unitIndex++;
+        } while (value >= 1024 && unitIndex < units.length - 1);
+        return value.toFixed(1) + ' ' + units[unitIndex];
+    }
+
+    document.querySelectorAll('.attachment-file-size').forEach(function (el) {
+        el.textContent = formatFileSize(Number(el.dataset.size));
+    });
+
+    function submitDelete() {
+        var layer = document.getElementById('deleteConfirmLayer');
+        var id = layer.dataset.id;
+        var password = document.getElementById('deletePassword').value;
+
+        fetch('/board/' + id, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: password })
+        }).then(function (res) {
+            if (res.ok) {
+                alert('삭제되었습니다.');
+                window.location.href = '/board';
+            } else {
+                alert('비밀번호가 일치하지 않습니다.');
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

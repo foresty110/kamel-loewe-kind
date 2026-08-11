@@ -3,8 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>철학 자유게시판 - 화면 기획서 | 게시판 보기</title>
+<title>공지사항 게시판 - 화면 기획서 | 공지사항 보기</title>
 <style>
+  /* ============================================================
+     공유 디자인 시스템 — docs/board-list.html에서 그대로 복사함.
+     모든 게시판 와이어프레임+기획서 페이지를 한꺼번에 다시 스타일링할
+     의도가 아니라면 수정하지 말 것. 화면별 마크업은 아래쪽의
+     <!-- PAGE-SPECIFIC --> 두 구역에만 넣는다.
+     ============================================================ */
   :root {
     --ink: #1c1f26;
     --muted: #6b7280;
@@ -52,7 +58,7 @@
   .doc-header .value.path { font-family: "SFMono-Regular", Menlo, Consolas, monospace; color: var(--accent); font-weight: 500; }
   .doc-header .field.title .value { font-size: 15px; }
 
-  /* ---------- two-column split shell ---------- */
+  /* ---------- 좌우 2단 분할 뼈대 ---------- */
 
   .split {
     display: flex;
@@ -124,7 +130,7 @@
 
   .column-header .desc { font-size: 12px; color: var(--muted); }
 
-  /* ---------- Left: wireframe (browser window chrome) ---------- */
+  /* ---------- 좌측: 와이어프레임 (브라우저 창 크롬) ---------- */
 
   .browser-window {
     background: var(--panel);
@@ -187,9 +193,9 @@
     margin: 0 0 24px;
   }
 
-  /* Plain inline circle — use ONLY for the SPEC table's own row-number
-     column. Never use this (unwrapped) inside the SCREEN mockup: it
-     will push the labeled text out of its natural position. */
+  /* 위치 지정 없는 일반 인라인 원 — SPEC 표 자체의 번호 열에서만 쓴다.
+     SCREEN 목업 안에서 (래핑 없이) 절대 쓰지 말 것: 라벨 텍스트를
+     원래 위치에서 밀어내게 된다. */
   .badge {
     display: inline-flex;
     align-items: center;
@@ -206,11 +212,11 @@
     flex-shrink: 0;
   }
 
-  /* Annotation pin: floats beside a UI element without shifting it.
-     Wrap the annotated element in .anno, then put .badge-pin as its
-     first child — position:absolute takes it out of the flow, so the
-     real element (select/input/text/th label) sits exactly where it
-     would on a real screen, with the number just floating over it. */
+  /* 주석 핀: 요소를 밀어내지 않고 그 옆에 떠 있는다.
+     주석을 달 요소를 .anno로 감싸고, 그 첫 번째 자식으로 .badge-pin을
+     넣는다 — position:absolute가 흐름에서 빠지므로, 실제 요소
+     (select/input/text/th 라벨)는 실제 화면에서 렌더링될 자리 그대로
+     있고, 숫자만 그 위에 떠 있게 된다. */
   .anno {
     position: relative;
   }
@@ -319,7 +325,69 @@
     white-space: nowrap;
   }
 
-  /* ---------- page-specific: post detail ---------- */
+  /* ---------- 우측: 기획서 표 ---------- */
+
+  .spec-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .spec-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 22px 24px;
+    box-shadow: 0 1px 2px rgba(16,24,40,.04);
+  }
+
+  .spec-card h2 {
+    font-size: 13px;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 12px;
+  }
+
+  .spec-card p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--ink);
+  }
+
+  .spec-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .spec-table td {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+
+  .spec-table tr:last-child td { border-bottom: none; }
+
+  .spec-table td.num { width: 30px; }
+  .spec-table td.item {
+    width: 96px;
+    font-weight: 700;
+    color: var(--ink);
+    padding-right: 10px;
+    white-space: nowrap;
+  }
+
+  .spec-table td.desc ul {
+    margin: 0;
+    padding-left: 16px;
+    color: var(--muted);
+  }
+
+  .spec-table td.desc li { margin-bottom: 3px; }
+  .spec-table td.desc li:last-child { margin-bottom: 0; }
+
+  /* ---------- PAGE-SPECIFIC: 공지사항 상세 ---------- */
 
   .view-meta-row {
     display: flex;
@@ -377,6 +445,80 @@
 
   .view-content p { margin: 0 0 14px; }
   .view-content p:last-child { margin-bottom: 0; }
+
+  .view-meeting-info {
+    margin: 0 0 22px;
+  }
+
+  .info-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px 20px 6px;
+    box-shadow: 0 1px 2px rgba(16,24,40,.04);
+  }
+
+  .info-card-heading {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: #ea580c;
+    margin: 0 0 4px;
+  }
+
+  .info-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .info-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .info-row:first-child {
+    border-top: none;
+  }
+
+  .info-icon {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: #fff1e6;
+    font-size: 13px;
+  }
+
+  .info-row-label {
+    flex: 0 0 70px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .info-row-value {
+    flex: 1;
+    min-width: 0;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .info-sep {
+    display: inline-block;
+    color: #c6cad2;
+    margin: 0 8px;
+    font-weight: 400;
+  }
 
   .view-attachments {
     margin-top: 20px;
@@ -472,68 +614,6 @@
     margin-top: 28px;
   }
 
-  /* ---------- Right: spec table ---------- */
-
-  .spec-stack {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-
-  .spec-card {
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 22px 24px;
-    box-shadow: 0 1px 2px rgba(16,24,40,.04);
-  }
-
-  .spec-card h2 {
-    font-size: 13px;
-    letter-spacing: .03em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin: 0 0 12px;
-  }
-
-  .spec-card p {
-    margin: 0;
-    font-size: 14px;
-    color: var(--ink);
-  }
-
-  .spec-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-  }
-
-  .spec-table td {
-    padding: 12px 0;
-    border-bottom: 1px solid var(--line);
-    vertical-align: top;
-  }
-
-  .spec-table tr:last-child td { border-bottom: none; }
-
-  .spec-table td.num { width: 30px; }
-  .spec-table td.item {
-    width: 96px;
-    font-weight: 700;
-    color: var(--ink);
-    padding-right: 10px;
-    white-space: nowrap;
-  }
-
-  .spec-table td.desc ul {
-    margin: 0;
-    padding-left: 16px;
-    color: var(--muted);
-  }
-
-  .spec-table td.desc li { margin-bottom: 3px; }
-  .spec-table td.desc li:last-child { margin-bottom: 0; }
-
   @media (max-width: 980px) {
     .split { flex-direction: column; }
     .divider { width: auto; height: 32px; }
@@ -547,15 +627,15 @@
   <div class="doc-header">
     <div class="field title">
       <span class="label">화면 명</span>
-      <span class="value">게시판 보기</span>
+      <span class="value">공지사항 보기</span>
     </div>
     <div class="field">
       <span class="label">화면 아이디</span>
-      <span class="value">data_center_detail</span>
+      <span class="value">board_notice_view</span>
     </div>
     <div class="field">
       <span class="label">화면 경로</span>
-      <span class="value path">/boards/free/view/{boardId}</span>
+      <span class="value path">/boards/notice/view/{noticeId}</span>
     </div>
   </div>
 
@@ -575,56 +655,85 @@
             <span class="minimize"></span>
             <span class="zoom"></span>
           </div>
-          <div class="browser-address"><span class="lock">🔒</span>kamel-loewe-kind.com/boards/free/view/482</div>
+          <div class="browser-address"><span class="lock">🔒</span>kamel-loewe-kind.com/boards/notice/view/57</div>
         </div>
         <div class="wireframe-panel">
-          <p class="wire-title">철학 자유게시판 - 보기</p>
+          <p class="wire-title">공지사항 - 보기</p>
 
           <div class="view-meta-row">
-            <span class="view-author">소은</span>
+            <span class="view-author">운영진</span>
             <div class="anno">
               <span class="badge-pin">2</span>
-              <span class="view-dates">등록일 2026.06.18 09:12<span class="sep">·</span>수정일 2026.06.19 10:03</span>
+              <span class="view-dates">등록일 2026.08.01 10:00<span class="sep">·</span>수정일 2026.08.02 09:15</span>
             </div>
           </div>
 
           <div class="view-title-row">
             <div class="anno view-title">
               <span class="badge-pin">1</span>
-              <span class="cat-pill">윤리학</span>
-              <span>칸트의 정언명령, 일상에 어떻게 적용할까</span>
+              <span class="cat-pill">정기모임</span>
+              <span>8월 정기 모임 일정 및 장소 변경 안내</span>
             </div>
-            <span class="view-views">조회수: 43</span>
+            <span class="view-views">조회수: 128</span>
+          </div>
+
+          <div class="anno view-meeting-info">
+            <span class="badge-pin">3</span>
+            <div class="info-card">
+              <p class="info-card-heading">모임 정보</p>
+              <ul class="info-list">
+                <li class="info-row">
+                  <span class="info-icon">📅</span>
+                  <span class="info-row-label">일시</span>
+                  <span class="info-row-value">2026년 8월 22일(토) 오후 2시</span>
+                </li>
+                <li class="info-row">
+                  <span class="info-icon">📍</span>
+                  <span class="info-row-label">장소</span>
+                  <span class="info-row-value">시청역 인근 스터디룸(변경)</span>
+                </li>
+                <li class="info-row">
+                  <span class="info-icon">📖</span>
+                  <span class="info-row-label">책</span>
+                  <span class="info-row-value">실천이성비판<span class="info-sep">/</span>아카넷</span>
+                </li>
+                <li class="info-row">
+                  <span class="info-icon">📝</span>
+                  <span class="info-row-label">읽어올 범위</span>
+                  <span class="info-row-value">89쪽 ~ 134쪽</span>
+                </li>
+                <li class="info-row">
+                  <span class="info-icon">💳</span>
+                  <span class="info-row-label">참가비용</span>
+                  <span class="info-row-value">10,000원<span class="info-sep">/</span>다과·대관비 포함, 현장 결제</span>
+                </li>
+              </ul>
+            </div>
           </div>
 
           <div class="anno view-content">
-            <span class="badge-pin">3</span>
-            <p>칸트의 정언명령은 "네 의지의 준칙이 항상 동시에 보편적 입법의 원리로서 타당하도록 행위하라"는 형식으로 정리된다. 처음 접하면 지나치게 추상적으로 들리지만, 실은 일상의 작은 선택 앞에서도 꽤 유용한 잣대가 된다.</p>
-            <p>예를 들어 약속 시간에 늦을 것 같을 때 "이번 한 번만 거짓말로 둘러대자"는 생각이 들 수 있다. 이때 "모든 사람이 곤란할 때마다 거짓말을 해도 되는가"라고 자문해 보면, 그 준칙이 보편화될 경우 약속이라는 제도 자체가 무너진다는 것을 알 수 있다. 결과가 아니라 그 행위의 원칙이 보편타당한지를 묻는 것, 이것이 칸트 윤리학의 핵심이다.</p>
-            <p>물론 정언명령이 모든 딜레마에 명쾌한 답을 주는 것은 아니다. 그럼에도 "이 행동을 모두가 해도 괜찮은가"라는 질문 하나만으로도 충동적인 결정을 한 번 더 돌아보게 만든다는 점에서, 여전히 실천적인 가치가 있다고 생각한다.</p>
+            <span class="badge-pin">4</span>
+            <p>안녕하세요, 운영진입니다. 8월 정기 모임 일정과 장소가 아래와 같이 변경되었으니 참고 부탁드립니다.</p>
+            <p>위 모임 정보를 확인해 주시고, 첨부된 안내문도 미리 읽어와 주시기 바랍니다.</p>
           </div>
 
           <div class="anno view-attachments">
-            <span class="badge-pin">4</span>
-            <div class="file-row"><span class="file-icon">📎</span><span class="file-name">칸트_정언명령_요약.pdf</span></div>
-            <div class="file-row"><span class="file-icon">📎</span><span class="file-name">실천이성비판_발췌.docx</span></div>
+            <span class="badge-pin">5</span>
+            <div class="file-row"><span class="file-icon">📎</span><span class="file-name">8월_모임_안내.pdf</span></div>
+            <div class="file-row"><span class="file-icon">📎</span><span class="file-name">정기모임_참석신청서.docx</span></div>
           </div>
 
           <div class="anno view-comments">
-            <span class="badge-pin">5</span>
-            <p class="comment-heading">댓글 3</p>
+            <span class="badge-pin">6</span>
+            <p class="comment-heading">댓글 2</p>
             <div class="comment-list">
               <div class="comment-item">
-                <div class="comment-meta"><span class="comment-author">재현</span><span class="comment-date">2026.06.19 11:20</span></div>
-                <div class="comment-body">정언명령을 일상에 적용하는 예시가 인상 깊네요. 특히 거짓말 예시가 와닿았습니다.</div>
+                <div class="comment-meta"><span class="comment-author">재현</span><span class="comment-date">2026.08.01 14:02</span></div>
+                <div class="comment-body">장소 변경 확인했습니다. 신청서는 오늘 중으로 작성해서 보내드릴게요.</div>
               </div>
               <div class="comment-item">
-                <div class="comment-meta"><span class="comment-author">도현</span><span class="comment-date">2026.06.19 15:47</span></div>
-                <div class="comment-body">칸트 윤리학은 결과보다 동기를 중시한다는 점에서 공리주의와 대비되는 것 같습니다.</div>
-              </div>
-              <div class="comment-item">
-                <div class="comment-meta"><span class="comment-author">하은</span><span class="comment-date">2026.06.20 09:03</span></div>
-                <div class="comment-body">정언명령이 문화나 시대가 달라져도 똑같이 보편적으로 적용될 수 있는지 궁금합니다.</div>
+                <div class="comment-meta"><span class="comment-author">도현</span><span class="comment-date">2026.08.01 19:47</span></div>
+                <div class="comment-body">스터디룸 주차 가능한지도 안내해 주실 수 있을까요?</div>
               </div>
             </div>
             <div class="comment-form">
@@ -638,7 +747,7 @@
             <button class="wire-btn-secondary" style="background:var(--ink);color:#fff;">목록</button>
             <button class="wire-btn-secondary">수정</button>
             <div class="anno">
-              <span class="badge-pin">6</span>
+              <span class="badge-pin">7</span>
               <button class="wire-btn-secondary">삭제</button>
             </div>
           </div>
@@ -659,7 +768,7 @@
       <div class="spec-stack">
         <div class="spec-card">
           <h2>개요</h2>
-          <p>철학 자유게시판의 게시글 상세 내용을 조회하는 화면이다. 댓글 등록, 게시글 수정·삭제 이동도 이 화면에서 이루어진다.</p>
+          <p>공지사항 게시글의 상세 내용을 조회하는 화면이다. 댓글 등록, 게시글 수정·삭제 이동도 이 화면에서 이루어진다.</p>
         </div>
 
         <div class="spec-card">
@@ -681,11 +790,21 @@
               </tr>
               <tr>
                 <td class="num"><span class="badge">3</span></td>
+                <td class="item">모임 정보</td>
+                <td class="desc"><ul>
+                  <li>내용보다 위, 제목 바로 아래에 위치</li>
+                  <li>일시, 장소, 책, 읽어올 범위, 참가비용을 항목별로 구분해서 출력</li>
+                  <li>책·참가비용 항목은 각각 책이름·출판사 / 금액·비고 두 입력란의 값을 '/'로 구분해 한 줄로 출력 (별도 라벨 표기 없음)</li>
+                  <li>읽어올 범위 항목은 시작 페이지·끝 페이지 두 입력란의 값을 받아 'N쪽 ~ M쪽' 형식으로 출력</li>
+                </ul></td>
+              </tr>
+              <tr>
+                <td class="num"><span class="badge">4</span></td>
                 <td class="item">내용</td>
                 <td class="desc"><ul><li>등록 내용 출력</li></ul></td>
               </tr>
               <tr>
-                <td class="num"><span class="badge">4</span></td>
+                <td class="num"><span class="badge">5</span></td>
                 <td class="item">첨부파일</td>
                 <td class="desc"><ul>
                   <li>2개 이상 표시 가능</li>
@@ -695,7 +814,7 @@
                 </ul></td>
               </tr>
               <tr>
-                <td class="num"><span class="badge">5</span></td>
+                <td class="num"><span class="badge">6</span></td>
                 <td class="item">댓글 내용</td>
                 <td class="desc"><ul>
                   <li>댓글이 등록된 경우 출력</li>
@@ -706,7 +825,7 @@
                 </ul></td>
               </tr>
               <tr>
-                <td class="num"><span class="badge">6</span></td>
+                <td class="num"><span class="badge">7</span></td>
                 <td class="item">삭제</td>
                 <td class="desc"><ul>
                   <li>비밀번호 확인 레이어 노출</li>

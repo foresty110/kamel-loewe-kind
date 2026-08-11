@@ -9,12 +9,14 @@
             useGeneratedKeys="true"
             keyProperty="id">
         INSERT INTO board (
+            board_type,
             category_id,
             author,
             password,
             title,
             content
         ) VALUES (
+                    #{boardType},
                     #{categoryId},
                     #{author},
                     #{password},

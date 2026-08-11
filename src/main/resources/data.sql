@@ -1,31 +1,59 @@
-INSERT INTO category (name) VALUES
-  ('윤리학'), ('철학사'), ('형이상학'), ('인식론'), ('논리학'), ('정치철학')
-ON CONFLICT (name) DO NOTHING;
+INSERT INTO category (board_type, name) VALUES
+  ('GENERAL', '윤리학'), ('GENERAL', '철학사'), ('GENERAL', '형이상학'), ('GENERAL', '인식론'), ('GENERAL', '논리학'), ('GENERAL', '정치철학'),
+  ('NOTICE', '정기모임'), ('NOTICE', '소모임')
+ON CONFLICT (board_type, name) DO NOTHING;
 
 -- 비밀번호는 모두 'Test1234!'를 BCrypt로 암호화한 값
-INSERT INTO board (category_id, author, password, title, content)
-SELECT (SELECT id FROM category WHERE name = '윤리학'),
+INSERT INTO board (board_type, category_id, author, password, title, content)
+SELECT 'GENERAL',
+       (SELECT id FROM category WHERE board_type = 'GENERAL' AND name = '윤리학'),
        '김철수',
        '$2a$10$mtr9RRnZpaEYLFOwBI1E1uL14thTvqA/FIZB19DjLvEZS7bE2qCQK',
        '칸트의 정언명령에 대하여',
        '정언명령은 결과와 무관하게 그 자체로 타당한 도덕법칙입니다. 여러분은 어떻게 생각하시나요?'
 WHERE NOT EXISTS (SELECT 1 FROM board WHERE title = '칸트의 정언명령에 대하여');
 
-INSERT INTO board (category_id, author, password, title, content)
-SELECT (SELECT id FROM category WHERE name = '철학사'),
+INSERT INTO board (board_type, category_id, author, password, title, content)
+SELECT 'GENERAL',
+       (SELECT id FROM category WHERE board_type = 'GENERAL' AND name = '철학사'),
        '이영희',
        '$2a$10$mtr9RRnZpaEYLFOwBI1E1uL14thTvqA/FIZB19DjLvEZS7bE2qCQK',
        '소크라테스의 산파술이란?',
        '소크라테스는 질문을 거듭해 상대방 스스로 자신의 무지를 깨닫게 만들었습니다. 이런 대화법이 오늘날에도 유효할까요?'
 WHERE NOT EXISTS (SELECT 1 FROM board WHERE title = '소크라테스의 산파술이란?');
 
-INSERT INTO board (category_id, author, password, title, content)
-SELECT (SELECT id FROM category WHERE name = '형이상학'),
+INSERT INTO board (board_type, category_id, author, password, title, content)
+SELECT 'GENERAL',
+       (SELECT id FROM category WHERE board_type = 'GENERAL' AND name = '형이상학'),
        '박민수',
        '$2a$10$mtr9RRnZpaEYLFOwBI1E1uL14thTvqA/FIZB19DjLvEZS7bE2qCQK',
        '존재란 무엇인가',
        '하이데거는 존재와 존재자를 구분해야 한다고 말했습니다. 이 구분이 왜 중요한지 함께 이야기해봐요.'
 WHERE NOT EXISTS (SELECT 1 FROM board WHERE title = '존재란 무엇인가');
+
+INSERT INTO board (board_type, category_id, author, password, title, content)
+SELECT 'NOTICE',
+       (SELECT id FROM category WHERE board_type = 'NOTICE' AND name = '정기모임'),
+       '운영진',
+       '$2a$10$mtr9RRnZpaEYLFOwBI1E1uL14thTvqA/FIZB19DjLvEZS7bE2qCQK',
+       '8월 정기모임 안내',
+       '이번 달은 하이데거의 존재와 시간을 함께 읽습니다. 아래 모임 정보를 확인해주세요.'
+WHERE NOT EXISTS (SELECT 1 FROM board WHERE title = '8월 정기모임 안내');
+
+INSERT INTO board_notice (board_id, meeting_at, location, book, publisher, page_start, page_end, fee, fee_description)
+SELECT (SELECT id FROM board WHERE title = '8월 정기모임 안내'),
+       '2026-08-30 19:00:00',
+       '강남 스터디카페',
+       '존재와 시간',
+       '까치글방',
+       1,
+       120,
+       10000,
+       '스터디룸 대관료'
+WHERE NOT EXISTS (
+    SELECT 1 FROM board_notice
+    WHERE board_id = (SELECT id FROM board WHERE title = '8월 정기모임 안내')
+);
 
 INSERT INTO comment (board_id, author, content)
 SELECT (SELECT id FROM board WHERE title = '칸트의 정언명령에 대하여'),

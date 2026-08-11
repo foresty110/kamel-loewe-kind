@@ -623,3 +623,78 @@ a {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* ---------- notice-view: 모임 정보 ---------- */
+
+.view-meeting-info {
+  margin: 0 0 22px;
+}
+
+.info-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px 20px 6px;
+}
+
+.info-card .info-card-heading {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: #ea580c;
+  margin: 0 0 4px;
+}
+
+.info-card .info-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.info-card .info-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  border-top: 1px solid var(--line);
+}
+
+.info-card .info-row:first-child {
+  border-top: none;
+}
+
+.info-card .info-icon {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: #fff1e6;
+  font-size: 13px;
+}
+
+.info-card .info-row-label {
+  flex: 0 0 70px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.info-card .info-row-value {
+  flex: 1;
+  min-width: 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.info-card .info-sep {
+  display: inline-block;
+  color: #c6cad2;
+  margin: 0 8px;
+  font-weight: 400;
+}

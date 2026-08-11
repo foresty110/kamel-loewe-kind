@@ -64,6 +64,9 @@ public class BoardService {
         //카데고리 존재 여부 확인
         categoryService.validateExists(board.getCategoryId());
 
+        // 게시판 타입 설정 (현재는 자유게시판 등록만 지원)
+        board.setBoardType("GENERAL");
+
         // 비밀번호 암호화
         board.setPassword(passwordEncoder.encode(board.getPassword()));
 
