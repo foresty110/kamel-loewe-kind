@@ -16,6 +16,14 @@
         WHERE board_id = #{id}
     </select>
 
+    <select id="countByBoardId"
+            parameterType="Long"
+            resultType="int">
+        SELECT COUNT(*)
+        FROM comment
+        WHERE board_id = #{id}
+    </select>
+
     <select id="findById"
             parameterType="Long"
             resultType="Comment">

@@ -1,6 +1,7 @@
 INSERT INTO category (board_type, name) VALUES
   ('GENERAL', '윤리학'), ('GENERAL', '철학사'), ('GENERAL', '형이상학'), ('GENERAL', '인식론'), ('GENERAL', '논리학'), ('GENERAL', '정치철학'),
-  ('NOTICE', '정기모임'), ('NOTICE', '소모임')
+  ('NOTICE', '정기모임'), ('NOTICE', '소모임'),
+  ('FEED', '전체')
 ON CONFLICT (board_type, name) DO NOTHING;
 
 -- 비밀번호는 모두 'Test1234!'를 BCrypt로 암호화한 값
@@ -113,4 +114,74 @@ WHERE NOT EXISTS (
     SELECT 1 FROM comment
     WHERE board_id = (SELECT id FROM board WHERE title = '존재란 무엇인가')
       AND author = '강태민'
+);
+
+-- FEED 게시판(전체) 카테고리는 화면에 표시하지 않고 DB 제약(board.category_id NOT NULL)을 만족시키기 위한 내부용
+
+INSERT INTO board (board_type, category_id, author, password, title, content)
+SELECT 'FEED',
+       (SELECT id FROM category WHERE board_type = 'FEED' AND name = '전체'),
+       '소은',
+       '$2a$10$mtr9RRnZpaEYLFOwBI1E1uL14thTvqA/FIZB19DjLvEZS7bE2qCQK',
+       '오늘 읽은 니체 구절 공유해요',
+       '차라투스트라는 이렇게 말했다 읽다가 이 구절에서 한참 멈췄어요. 춤추는 별을 낳으려면 자기 안에 혼돈을 지니고 있어야 한다는 말, 다들 어떻게 읽으셨나요. 저는 이 문장을 읽고 나서 그동안 불안이라고만 여겼던 감정들을 조금 다르게 보게 됐어요.'
+WHERE NOT EXISTS (SELECT 1 FROM board WHERE title = '오늘 읽은 니체 구절 공유해요');
+
+INSERT INTO board (board_type, category_id, author, password, title, content)
+SELECT 'FEED',
+       (SELECT id FROM category WHERE board_type = 'FEED' AND name = '전체'),
+       '재현',
+       '$2a$10$mtr9RRnZpaEYLFOwBI1E1uL14thTvqA/FIZB19DjLvEZS7bE2qCQK',
+       '이번 주 모임 다들 참석하시나요?',
+       '장소 예약 때문에 인원 파악이 필요해서요. 참석 여부 댓글로 남겨주시면 감사하겠습니다!'
+WHERE NOT EXISTS (SELECT 1 FROM board WHERE title = '이번 주 모임 다들 참석하시나요?');
+
+INSERT INTO board (board_type, category_id, author, password, title, content)
+SELECT 'FEED',
+       (SELECT id FROM category WHERE board_type = 'FEED' AND name = '전체'),
+       '도현',
+       '$2a$10$mtr9RRnZpaEYLFOwBI1E1uL14thTvqA/FIZB19DjLvEZS7bE2qCQK',
+       '스터디카페에서 찍은 책상 셋업',
+       '다들 어떤 환경에서 책 읽으시나요? 저는 조용한 카페보다 백색소음 있는 곳이 더 집중이 잘 되더라고요. 괜찮은 스터디카페 있으면 추천 부탁드려요.'
+WHERE NOT EXISTS (SELECT 1 FROM board WHERE title = '스터디카페에서 찍은 책상 셋업');
+
+INSERT INTO board_feed (board_id, like_count)
+SELECT (SELECT id FROM board WHERE title = '오늘 읽은 니체 구절 공유해요'), 24
+WHERE NOT EXISTS (
+    SELECT 1 FROM board_feed
+    WHERE board_id = (SELECT id FROM board WHERE title = '오늘 읽은 니체 구절 공유해요')
+);
+
+INSERT INTO board_feed (board_id, like_count)
+SELECT (SELECT id FROM board WHERE title = '이번 주 모임 다들 참석하시나요?'), 8
+WHERE NOT EXISTS (
+    SELECT 1 FROM board_feed
+    WHERE board_id = (SELECT id FROM board WHERE title = '이번 주 모임 다들 참석하시나요?')
+);
+
+INSERT INTO board_feed (board_id, like_count)
+SELECT (SELECT id FROM board WHERE title = '스터디카페에서 찍은 책상 셋업'), 41
+WHERE NOT EXISTS (
+    SELECT 1 FROM board_feed
+    WHERE board_id = (SELECT id FROM board WHERE title = '스터디카페에서 찍은 책상 셋업')
+);
+
+INSERT INTO comment (board_id, author, content)
+SELECT (SELECT id FROM board WHERE title = '이번 주 모임 다들 참석하시나요?'),
+       '도현',
+       '저 참석할게요!'
+WHERE NOT EXISTS (
+    SELECT 1 FROM comment
+    WHERE board_id = (SELECT id FROM board WHERE title = '이번 주 모임 다들 참석하시나요?')
+      AND author = '도현'
+);
+
+INSERT INTO comment (board_id, author, content)
+SELECT (SELECT id FROM board WHERE title = '이번 주 모임 다들 참석하시나요?'),
+       '하은',
+       '이번엔 못 갈 것 같아요'
+WHERE NOT EXISTS (
+    SELECT 1 FROM comment
+    WHERE board_id = (SELECT id FROM board WHERE title = '이번 주 모임 다들 참석하시나요?')
+      AND author = '하은'
 );

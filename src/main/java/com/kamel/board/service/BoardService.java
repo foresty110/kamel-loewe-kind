@@ -33,6 +33,17 @@ public class BoardService {
     }
 
     /**
+     * 게시판 타입별로 최신순 게시글 목록을 조회한다.
+     *
+     * @param boardType 조회할 게시판 타입
+     * @param limit     조회할 최대 게시글 수
+     * @return 게시글 목록
+     */
+    public List<Board> getListByType(String boardType, int limit) {
+        return boardMapper.findAllByBoardType(boardType, limit);
+    }
+
+    /**
      * 게시글 상세 정보를 조회하고 조회수를 1 증가시킨다.
      *
      * @param id 상세 조회할 게시글 번호

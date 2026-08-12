@@ -5,7 +5,6 @@ import com.kamel.board.mapper.CommentMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -26,6 +25,17 @@ public class CommentService {
     public List<Comment> getAll(Long id) {
         boardService.validateExists(id);
         return commentMapper.findAllByBoardId(id);
+    }
+
+    /**
+     * 게시글에 속한 댓글 개수를 조회한다.
+     *
+     * @param id 게시글 ID
+     * @return 댓글 개수
+     */
+    public int countByBoardId(Long id) {
+        boardService.validateExists(id);
+        return commentMapper.countByBoardId(id);
     }
 
     /**

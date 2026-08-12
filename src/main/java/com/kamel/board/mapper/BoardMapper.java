@@ -30,6 +30,15 @@ public interface BoardMapper {
     List<BoardListResponseDto> search(BoardSearchCondition condition);
 
     /**
+     * 게시판 타입별로 최신순 게시글 목록을 조회한다.
+     *
+     * @param boardType 조회할 게시판 타입
+     * @param limit     조회할 최대 게시글 수
+     * @return 게시글 목록
+     */
+    List<Board> findAllByBoardType(String boardType,int limit);
+
+    /**
      * 게시글 상세 정보를 조회한다.
      *
      * @param id 상세 조회할 게시글 번호

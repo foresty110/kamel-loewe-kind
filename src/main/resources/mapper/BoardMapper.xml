@@ -74,6 +74,15 @@
 
     </select>
 
+    <select id="findAllByBoardType"
+            resultType="Board">
+        SELECT *
+        FROM board
+        WHERE board_type = #{boardType}
+        ORDER BY id DESC
+        LIMIT #{limit}
+    </select>
+
     <select id="findById"
             parameterType="Long"
             resultType="Board">

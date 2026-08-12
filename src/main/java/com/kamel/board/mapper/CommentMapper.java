@@ -18,6 +18,14 @@ public interface CommentMapper {
     List<Comment> findAllByBoardId(Long id);
 
     /**
+     * 특정 게시글에 달린 댓글 개수를 조회한다.
+     *
+     * @param id 게시글 번호
+     * @return 댓글 개수
+     */
+    int countByBoardId(Long id);
+
+    /**
      * 댓글 id로 해당 댓글을 조회한다.
      *
      * @return 댓글 엔티티
