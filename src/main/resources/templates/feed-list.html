@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>피드 게시판 - 목록</title>
+<link rel="stylesheet" th:href="@{/css/board-common.css}">
+</head>
+<body>
+
+<div style="max-width: 1080px; margin: 0 auto; padding: 32px 24px 60px;">
+
+    <div class="feed-toolbar">
+        <p class="feed-toolbar-title">피드 게시판</p>
+        <a th:href="@{/feed/new}" class="btn-primary">글쓰기</a>
+    </div>
+
+    <div class="feed-list" th:if="${not #lists.isEmpty(feedList)}">
+        <a class="feed-card" th:each="feed : ${feedList}" th:href="@{/feed/{id}(id=${feed.id})}">
+            <div class="feed-card-header">
+                <span class="feed-card-author" th:text="${feed.author}"></span>
+                <span class="feed-card-time" th:text="${#temporals.format(feed.createdAt, 'yyyy.MM.dd HH:mm')}"></span>
+            </div>
+            <p class="feed-card-title" th:text="${feed.title}"></p>
+            <p class="feed-card-body" th:text="${feed.content}"></p>
+            <img class="feed-card-image" th:if="${feed.image != null}" th:src="@{/attachment/{id}(id=${feed.image})}" alt="">
+            <div class="feed-card-actions">
+                <span class="feed-action">
+                    <span>♡</span><span th:text="${feed.likeCount}"></span>
+                </span>
+                <span class="feed-action">
+                    <span>💬</span><span th:text="${feed.commentCount}"></span>
+                </span>
+            </div>
+        </a>
+    </div>
+
+    <p class="feed-empty" th:if="${#lists.isEmpty(feedList)}">아직 등록된 피드가 없습니다.</p>
+
+</div>
+
+</body>
+</html>
