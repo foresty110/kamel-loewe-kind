@@ -50,6 +50,14 @@ public interface AttachmentMapper {
     List<Attachment> findAllByBoardId(Long boardId);
 
     /**
+     * 게시글에 속한 첫 번째 첨부파일의 id를 조회한다.
+     *
+     * @param boardId 조회할 게시글 번호
+     * @return 첫 번째 첨부파일의 id, 없으면 null
+     */
+    Long findFirstByBoardId(Long boardId);
+
+    /**
      * id 목록에 해당하는 첨부파일을 삭제한다.
      *
      * @param attachmentIds 삭제할 첨부파일 번호 목록

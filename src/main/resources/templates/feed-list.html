@@ -23,7 +23,7 @@
             </div>
             <p class="feed-card-title" th:text="${feed.title}"></p>
             <p class="feed-card-body" th:text="${feed.content}"></p>
-            <img class="feed-card-image" th:if="${feed.image != null}" th:src="@{/attachment/{id}(id=${feed.image})}" alt="">
+            <img class="feed-card-image" th:if="${feed.imageId != null}" th:src="@{/attachment/{id}/view(id=${feed.imageId})}" alt="">
             <div class="feed-card-actions">
                 <span class="feed-action">
                     <span>♡</span><span th:text="${feed.likeCount}"></span>

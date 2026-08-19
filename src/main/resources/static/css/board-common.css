@@ -799,3 +799,41 @@ a {
   font-size: 13px;
   padding: 60px 0;
 }
+
+/* ---------- feed-view ---------- */
+
+.view-feed-image {
+  display: block;
+  margin-top: 20px;
+  width: 100%;
+  max-height: 480px;
+  object-fit: cover;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+}
+
+.feed-like-bar {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+  padding: 16px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.feed-like-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 26px;
+  border-radius: 999px;
+  border: 1.5px solid #e11d48;
+  background: #fff1f3;
+  color: #e11d48;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.feed-like-button .icon {
+  font-size: 18px;
+}

@@ -1,7 +1,8 @@
 package com.kamel.board.feed.service;
 
-import com.kamel.board.entity.Attachment;
 import com.kamel.board.entity.Board;
+import com.kamel.board.entity.Comment;
+import com.kamel.board.feed.dto.FeedDetailResponseDto;
 import com.kamel.board.feed.dto.FeedPreviewResponseDto;
 import com.kamel.board.feed.entity.Feed;
 import com.kamel.board.feed.mapper.FeedMapper;
@@ -48,13 +49,36 @@ public class FeedService {
             int commentCount = commentService.countByBoardId(board.getId());
 
             // 피드 게시글은 기획상 이미지가 최대 1개라 첫 번째 첨부파일만 사용
-            Attachment attachment = attachmentService.findAllByBoardId(board.getId()).stream()
-                    .findFirst()
-                    .orElse(null);
+            Long imageId = attachmentService.findFirstByBoardId(board.getId());
 
-            responseList.add(FeedPreviewResponseDto.from(board, feed, commentCount, attachment));
+            responseList.add(FeedPreviewResponseDto.from(board, feed, commentCount, imageId));
         }
 
         return responseList;
+    }
+
+    /**
+     * 게시글 번호로 피드 상세정보를 조회한다.
+     *
+     * @param boardId 조회할 게시글 번호
+     * @return 피드 상세정보
+     * @throws IllegalArgumentException 존재하지 않는 피드 게시글인 경우
+     */
+    public FeedDetailResponseDto getOne(Long boardId) {
+
+        // 게시글 가져오기
+        Board board = boardService.getDetail(boardId);
+
+        // 피드 상세 정보 가져오기
+        Feed feed = feedMapper.findByBoardId(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("피드 게시글이 존재하지 않습니다."));
+
+        // 댓글 가져오기
+        List<Comment> commentList = commentService.getAll(boardId);
+
+        // 피드 게시글은 기획상 이미지가 최대 1개라 첫 번째 첨부파일만 사용
+        Long imageId = attachmentService.findFirstByBoardId(boardId);
+
+        return FeedDetailResponseDto.from(board, feed, commentList, imageId);
     }
 }

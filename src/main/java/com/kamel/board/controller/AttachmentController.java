@@ -1,6 +1,7 @@
 package com.kamel.board.controller;
 
 import com.kamel.board.dto.AttachmentUploadResponseDto;
+import com.kamel.board.service.AttachmentResource;
 import com.kamel.board.service.AttachmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -46,11 +47,28 @@ public class AttachmentController {
      */
     @GetMapping("/attachment/{id}")
     public ResponseEntity<Resource> download(@PathVariable Long id) {
-        Resource file = attachmentService.getOne(id);
+        Resource resource = attachmentService.getOne(id).getResource();
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(file);
+                .body(resource);
+    }
+
+    /**
+     * 첨부파일을 다운로드가 아닌 화면에 바로 렌더링한다.
+     *
+     * @param id 첨부파일 id
+     * @return 파일 리소스와 인라인 표시 헤더가 담긴 응답
+     */
+    @GetMapping("/attachment/{id}/view")
+    public ResponseEntity<Resource> view(@PathVariable Long id) {
+        AttachmentResource file = attachmentService.getOne(id);
+        MediaType mediaType = MediaType.parseMediaType(file.getAttachment().getContentType());
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + file.getResource().getFilename() + "\"")
+                .contentType(mediaType)
+                .body(file.getResource());
     }
 }

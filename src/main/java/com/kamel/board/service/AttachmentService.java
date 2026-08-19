@@ -114,11 +114,12 @@ public class AttachmentService {
     }
 
     /**
-     * 첨부파일을 조회한다.
+     * 첨부파일의 메타정보와 실제 파일 리소스를 함께 조회한다.
      *
      * @param attachmentId 첨부파일 번호
+     * @return 첨부파일 메타정보와 파일 리소스
      */
-    public Resource getOne(Long attachmentId) {
+    public AttachmentResource getOne(Long attachmentId) {
 
         if (!attachmentMapper.existsById(attachmentId)) {
             throw new IllegalArgumentException("첨부파일이 없습니다.");
@@ -147,7 +148,7 @@ public class AttachmentService {
             throw new NoSuchElementException("파일이 존재하지 않음");
         }
 
-        return resource;
+        return new AttachmentResource(file, resource);
     }
 
     /**
@@ -158,6 +159,16 @@ public class AttachmentService {
      */
     public List<Attachment> findAllByBoardId(Long boardId) {
         return attachmentMapper.findAllByBoardId(boardId);
+    }
+
+    /**
+     * 게시글에 속한 첫 번째 첨부파일의 id를 조회한다.
+     *
+     * @param boardId 조회할 게시글 번호
+     * @return 첫 번째 첨부파일의 id, 없으면 null
+     */
+    public Long findFirstByBoardId(Long boardId) {
+        return attachmentMapper.findFirstByBoardId(boardId);
     }
 
     /**

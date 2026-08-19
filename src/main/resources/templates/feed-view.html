@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>피드 게시판 - 보기</title>
+<link rel="stylesheet" th:href="@{/css/board-common.css}">
+</head>
+<body>
+
+<div style="max-width: 1080px; margin: 0 auto; padding: 32px 24px 60px;">
+
+    <p class="page-title">피드 게시판 - 보기</p>
+
+    <div class="view-meta-row">
+        <span class="view-author" th:text="${feedDetail.author}"></span>
+        <span class="view-dates">
+            등록일 <span th:text="${#temporals.format(feedDetail.createdAt, 'yyyy.MM.dd HH:mm')}"></span>
+        </span>
+    </div>
+
+    <div class="view-title-row">
+        <div class="view-title">
+            <span th:text="${feedDetail.title}"></span>
+        </div>
+    </div>
+
+    <div class="view-content" th:text="${feedDetail.content}"></div>
+
+    <img class="view-feed-image"
+         th:if="${feedDetail.imageId != null}"
+         th:src="@{/attachment/{id}/view(id=${feedDetail.imageId})}"
+         alt="">
+
+    <div class="feed-like-bar">
+        <span class="feed-like-button"><span class="icon">♥</span>좋아요 <span th:text="${feedDetail.likeCount}"></span></span>
+    </div>
+
+    <div class="view-comments" th:data-id="${feedDetail.id}">
+        <p class="comment-heading" th:text="'댓글 ' + ${feedDetail.commentCount}"></p>
+        <div class="comment-list">
+            <div class="comment-item" th:each="comment : ${feedDetail.commentList}">
+                <div class="comment-meta">
+                    <span class="comment-author" th:text="${comment.author}"></span>
+                    <span class="comment-date" th:text="${#temporals.format(comment.createdAt, 'yyyy.MM.dd HH:mm')}"></span>
+                </div>
+                <div class="comment-body" th:text="${comment.content}"></div>
+            </div>
+        </div>
+        <div class="comment-form">
+            <div class="field comment-author-field">
+                <input class="text-input" type="text" id="commentAuthor" placeholder="작성자" maxlength="20">
+            </div>
+            <textarea class="text-input comment-textarea" id="commentContent" placeholder="댓글을 입력해 주세요."></textarea>
+            <button type="button" class="btn-secondary" onclick="submitComment()">등록</button>
+        </div>
+    </div>
+
+    <div class="view-actions">
+        <a th:href="@{/feed}" class="btn-secondary btn-dark">목록</a>
+    </div>
+
+</div>
+
+<script th:inline="none">
+    function submitComment() {
+        var wrapper = document.querySelector('.view-comments');
+        var id = wrapper.dataset.id;
+        var authorInput = document.getElementById('commentAuthor');
+        var contentInput = document.getElementById('commentContent');
+        var author = authorInput.value.trim();
+        var content = contentInput.value.trim();
+
+        if (author.length === 0) {
+            alert('작성자명을 입력해 주세요.');
+            return;
+        }
+        if (content.length === 0) {
+            alert('댓글 내용을 입력해 주세요.');
+            return;
+        }
+
+        fetch('/board/' + id + '/comments', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ author: author, content: content })
+        }).then(function (res) {
+            if (!res.ok) {
+                alert('댓글 등록에 실패했습니다.');
+                return;
+            }
+            res.json().then(function (comment) {
+                addCommentToList(comment);
+                authorInput.value = '';
+                contentInput.value = '';
+            });
+        });
+    }
+
+    function addCommentToList(comment) {
+        var list = document.querySelector('.comment-list');
+
+        var item = document.createElement('div');
+        item.className = 'comment-item';
+
+        var meta = document.createElement('div');
+        meta.className = 'comment-meta';
+
+        var authorEl = document.createElement('span');
+        authorEl.className = 'comment-author';
+        authorEl.textContent = comment.author;
+
+        var dateEl = document.createElement('span');
+        dateEl.className = 'comment-date';
+        dateEl.textContent = formatDateTime(comment.createdAt);
+
+        meta.appendChild(authorEl);
+        meta.appendChild(dateEl);
+
+        var body = document.createElement('div');
+        body.className = 'comment-body';
+        body.textContent = comment.content;
+
+        item.appendChild(meta);
+        item.appendChild(body);
+        list.appendChild(item);
+
+        document.querySelector('.comment-heading').textContent = '댓글 ' + list.children.length;
+    }
+
+    function formatDateTime(iso) {
+        var d = new Date(iso);
+        var pad = function (n) { return String(n).padStart(2, '0'); };
+        return d.getFullYear() + '.' + pad(d.getMonth() + 1) + '.' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+    }
+
+</script>
+
+</body>
+</html>

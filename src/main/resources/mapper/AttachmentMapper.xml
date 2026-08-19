@@ -46,6 +46,16 @@
         WHERE board_id = #{boardId}
     </select>
 
+    <select id="findFirstByBoardId"
+            parameterType="Long"
+            resultType="Long">
+        SELECT id
+        FROM attachment
+        WHERE board_id = #{boardId}
+        ORDER BY id ASC
+        LIMIT 1
+    </select>
+
     <update id="linkToBoard">
         UPDATE attachment
         SET board_id = #{boardId}
