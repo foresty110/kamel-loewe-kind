@@ -8,6 +8,7 @@ import com.kamel.board.feed.dto.FeedPreviewResponseDto;
 import com.kamel.board.feed.entity.Feed;
 import com.kamel.board.feed.mapper.FeedMapper;
 import com.kamel.board.service.AttachmentService;
+import com.kamel.board.service.BoardDeleteCondition;
 import com.kamel.board.service.BoardService;
 import com.kamel.board.service.CommentService;
 import lombok.RequiredArgsConstructor;
@@ -119,5 +120,19 @@ public class FeedService {
 
         // 게시글 기본 정보 수정
         boardService.update(boardId, board, newImageIds, removeImageIds);
+    }
+
+    /**
+     * 게시글 번호로 피드 게시글을 삭제한다.
+     *
+     * @param boardId         삭제 대상 게시글 번호
+     * @param deleteCondition 삭제 시 확인할 비밀번호 등의 조건
+     * @throws IllegalArgumentException 존재하지 않는 게시글 번호이거나 비밀번호가 일치하지 않는 경우
+     */
+    public void delete(Long boardId, BoardDeleteCondition deleteCondition) {
+        // 게시글 정보 삭제
+        boardService.delete(boardId, deleteCondition);
+        // 피드 정보 삭제
+        feedMapper.delete(boardId);
     }
 }

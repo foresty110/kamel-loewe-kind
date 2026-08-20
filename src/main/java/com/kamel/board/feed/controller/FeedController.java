@@ -1,19 +1,13 @@
 package com.kamel.board.feed.controller;
 
-import com.kamel.board.feed.dto.FeedDetailResponseDto;
-import com.kamel.board.feed.dto.FeedEditResponseDto;
-import com.kamel.board.feed.dto.FeedPreviewResponseDto;
-import com.kamel.board.feed.dto.FeedUpdateRequestDto;
+import com.kamel.board.feed.dto.*;
 import com.kamel.board.feed.service.FeedService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -91,4 +85,18 @@ public class FeedController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * 피드 게시글 삭제를 요청한다.
+     *
+     * @param boardId    삭제 대상 피드 게시글 번호
+     * @param requestDto 피드 삭제 조건
+     * @return 응답 본문 없는 성공 응답
+     */
+    @DeleteMapping("/feed/{boardId}")
+    public ResponseEntity<Void> delete(@PathVariable Long boardId,
+                                       @Valid @RequestBody FeedDeleteRequestDto requestDto) {
+
+        feedService.delete(boardId,requestDto.toDeleteCondition());
+        return ResponseEntity.noContent().build();
+    }
 }

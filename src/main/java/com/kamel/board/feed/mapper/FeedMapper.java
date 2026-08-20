@@ -19,4 +19,11 @@ public interface FeedMapper {
      * @return 피드 정보
      */
     Optional<Feed> findByBoardId(Long boardId);
+
+    /**
+     * 게시글 번호와 일치하는 피드를 삭제한다.
+     *
+     * @param id 삭제할 게시글 번호
+     */
+    int delete(Long id);
 }

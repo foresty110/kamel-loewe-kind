@@ -94,7 +94,7 @@
         var id = layer.dataset.id;
         var password = document.getElementById('deletePassword').value;
 
-        fetch('/board/' + id, {
+        fetch('/feed/' + id, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ password: password })

@@ -21,4 +21,10 @@
             #{boardId}
         </foreach>
     </select>
+
+    <delete id="delete" parameterType="Long">
+        DELETE
+        FROM board_feed
+        WHERE board_id = #{id}
+    </delete>
 </mapper>
