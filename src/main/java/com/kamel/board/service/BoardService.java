@@ -111,11 +111,10 @@ public class BoardService {
      * @param board             수정할 내용을 담은 게시글 정보
      * @param newAttachmentIds  새로 연결할 첨부파일 번호 목록
      * @param removeAttachmentIds 게시글에서 제거할 기존 첨부파일 번호 목록
-     * @return 수정 대상 게시글 정보
      * @throws IllegalArgumentException 존재하지 않는 게시글 번호인 경우
      */
     @Transactional
-    public Board update(Long id, Board board, List<Long> newAttachmentIds, List<Long> removeAttachmentIds) {
+    public void update(Long id, Board board, List<Long> newAttachmentIds, List<Long> removeAttachmentIds) {
         //게시글 존재여부 확인
         this.validateExists(id);
 
@@ -134,8 +133,6 @@ public class BoardService {
 
         //새로 등록된 이미지를 게시판과 연결
         attachmentService.linkToBoard(id, newAttachmentIds);
-
-        return befBoard;
     }
 
     /**

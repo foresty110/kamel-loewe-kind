@@ -58,11 +58,56 @@
 
     <div class="view-actions">
         <a th:href="@{/feed}" class="btn-secondary btn-dark">목록</a>
+        <a th:href="@{/feed/{boardId}/edit(boardId=${feedDetail.id})}" class="btn-secondary">수정</a>
+        <button type="button" class="btn-secondary" onclick="openDeleteConfirm()">삭제</button>
     </div>
 
 </div>
 
+<div class="layer-backdrop" id="deleteConfirmLayer" th:data-id="${feedDetail.id}" style="display:none;">
+    <div class="layer-card">
+        <p class="layer-title">비밀번호 확인</p>
+        <div class="field">
+            <input class="text-input" type="password" id="deletePassword" placeholder="비밀번호를 입력해 주세요.">
+        </div>
+        <div class="layer-footer">
+            <button type="button" class="btn-secondary" onclick="closeDeleteConfirm()">취소</button>
+            <button type="button" class="btn-primary" id="deleteConfirmBtn" disabled onclick="submitDelete()">확인</button>
+        </div>
+    </div>
+</div>
+
 <script th:inline="none">
+    function openDeleteConfirm() {
+        document.getElementById('deleteConfirmLayer').style.display = 'flex';
+    }
+    function closeDeleteConfirm() {
+        document.getElementById('deleteConfirmLayer').style.display = 'none';
+    }
+
+    document.getElementById('deletePassword').addEventListener('input', function (e) {
+        document.getElementById('deleteConfirmBtn').disabled = e.target.value.length === 0;
+    });
+
+    function submitDelete() {
+        var layer = document.getElementById('deleteConfirmLayer');
+        var id = layer.dataset.id;
+        var password = document.getElementById('deletePassword').value;
+
+        fetch('/board/' + id, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: password })
+        }).then(function (res) {
+            if (res.ok) {
+                alert('삭제되었습니다.');
+                window.location.href = '/feed';
+            } else {
+                alert('비밀번호가 일치하지 않습니다.');
+            }
+        });
+    }
+
     function submitComment() {
         var wrapper = document.querySelector('.view-comments');
         var id = wrapper.dataset.id;

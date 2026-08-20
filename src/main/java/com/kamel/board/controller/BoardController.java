@@ -143,9 +143,8 @@ public class BoardController {
     @PutMapping("/board/{boardId}")
     public ResponseEntity<Void> update(@PathVariable Long boardId, @Valid @RequestBody BoardUpdateRequestDto requestDto, Model model) {
 
-        Board board = boardService.update(boardId, requestDto.toEntity(),
+        boardService.update(boardId, requestDto.toEntity(),
                 requestDto.getNewAttachmentIds(), requestDto.getRemoveAttachmentIds());
-        BoardUpdateResponseDto responseDto = BoardUpdateResponseDto.from(board);
 
         return ResponseEntity.noContent().build();
     }

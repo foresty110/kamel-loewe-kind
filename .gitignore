@@ -35,3 +35,6 @@ bin/
 
 ### Claude Code ###
 .claude/
+
+### Playwright MCP ###
+.playwright-mcp/

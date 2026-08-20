@@ -3,6 +3,7 @@ package com.kamel.board.feed.service;
 import com.kamel.board.entity.Board;
 import com.kamel.board.entity.Comment;
 import com.kamel.board.feed.dto.FeedDetailResponseDto;
+import com.kamel.board.feed.dto.FeedEditResponseDto;
 import com.kamel.board.feed.dto.FeedPreviewResponseDto;
 import com.kamel.board.feed.entity.Feed;
 import com.kamel.board.feed.mapper.FeedMapper;
@@ -80,5 +81,43 @@ public class FeedService {
         Long imageId = attachmentService.findFirstByBoardId(boardId);
 
         return FeedDetailResponseDto.from(board, feed, commentList, imageId);
+    }
+
+    /**
+     * 게시글 번호로 피드 수정 화면에 필요한 정보를 조회한다.
+     *
+     * @param boardId 수정할 게시글 번호
+     * @return 피드 수정 화면용 응답 정보
+     */
+    public FeedEditResponseDto edit(Long boardId) {
+
+        // 게시글 기본 정보 가져오기
+        Board board = boardService.edit(boardId);
+
+        // 피드 게시글은 기획상 이미지가 최대 1개라 첫 번째 첨부파일만 사용
+        Long imageId = attachmentService.findFirstByBoardId(boardId);
+
+        return FeedEditResponseDto.from(board, imageId);
+    }
+
+    /**
+     * 게시글 번호로 피드 게시글을 수정한다.
+     *
+     * @param boardId       수정 대상 게시글 번호
+     * @param board         수정할 제목·내용을 담은 게시글 정보
+     * @param newImageId    새로 등록할 대표 이미지 첨부파일 번호
+     * @param removeImageId 제거할 기존 대표 이미지 첨부파일 번호
+     */
+    public void update(Long boardId, Board board, Long newImageId, Long removeImageId) {
+
+        // 피드 화면에는 카테고리 선택 UI가 없어서 board.categoryId는 항상 null로 넘어옴.
+        // boardService.update는 categoryId가 null이면 기존 값을 그대로 유지하므로 별도 처리가 필요 없음.
+
+        // 단일 이미지 id를 boardService.update가 요구하는 목록 형태로 변환
+        List<Long> newImageIds = newImageId != null ? List.of(newImageId) : List.of();
+        List<Long> removeImageIds = removeImageId != null ? List.of(removeImageId) : List.of();
+
+        // 게시글 기본 정보 수정
+        boardService.update(boardId, board, newImageIds, removeImageIds);
     }
 }

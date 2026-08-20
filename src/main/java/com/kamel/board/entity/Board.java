@@ -26,7 +26,9 @@ public class Board {
     private LocalDateTime updatedAt; // 수정일시
 
     public void update(Long categoryId, String title, String content, LocalDateTime updatedAt) {
-        this.categoryId = categoryId;
+        if (categoryId != null) {
+            this.categoryId = categoryId;
+        }
         this.title = title;
         this.content = content;
         this.updatedAt = updatedAt;
