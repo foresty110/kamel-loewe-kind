@@ -4,6 +4,11 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.kamel.board.feed.mapper.FeedMapper">
 
+    <insert id="insert" parameterType="Long">
+        INSERT INTO board_feed (board_id)
+        VALUES (#{boardId})
+    </insert>
+
     <select id="findByBoardId"
             parameterType="Long"
             resultType="Feed">

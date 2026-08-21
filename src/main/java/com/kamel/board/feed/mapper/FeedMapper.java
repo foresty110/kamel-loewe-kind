@@ -13,6 +13,13 @@ import java.util.Optional;
 public interface FeedMapper {
 
     /**
+     * 피드 정보를 등록한다.
+     *
+     * @param boardId 연결할 게시글 번호
+     */
+    void insert(Long boardId);
+
+    /**
      * 게시글 번호로 피드 정보를 조회한다.
      *
      * @param boardId 조회할 게시글 번호

@@ -1,10 +1,7 @@
 package com.kamel.board.controller;
 
 import com.kamel.board.dto.*;
-import com.kamel.board.entity.Attachment;
-import com.kamel.board.entity.Board;
-import com.kamel.board.entity.Category;
-import com.kamel.board.entity.Comment;
+import com.kamel.board.entity.*;
 import com.kamel.board.service.AttachmentService;
 import com.kamel.board.service.BoardService;
 import com.kamel.board.service.CategoryService;

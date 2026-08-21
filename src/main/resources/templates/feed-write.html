@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>피드 게시판 - 등록</title>
+<link rel="stylesheet" th:href="@{/css/board-common.css}">
+</head>
+<body>
+
+<div style="max-width: 1080px; margin: 0 auto; padding: 32px 24px 60px;">
+
+    <p class="page-title">피드 게시판 - 등록</p>
+
+    <form id="createForm">
+        <div class="form-row">
+            <span class="form-label">작성자 *</span>
+            <div class="form-body">
+                <div class="field">
+                    <input class="text-input" type="text" id="author"
+                           placeholder="작성자명을 입력해 주세요" maxlength="20" required>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <span class="form-label">비밀번호 *</span>
+            <div class="form-body">
+                <div class="field">
+                    <input class="text-input" type="password" id="password"
+                           placeholder="영문, 숫자, 특수문자(@$!%*#?&) 포함 8~20자" maxlength="20" required>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <span class="form-label">제목 *</span>
+            <div class="form-body">
+                <div class="field">
+                    <input class="text-input" type="text" id="title"
+                           placeholder="제목을 입력해 주세요" maxlength="200" required>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <span class="form-label">내용 *</span>
+            <div class="form-body">
+                <div class="field textarea-field">
+                    <textarea class="text-input content-textarea" id="content"
+                              placeholder="내용을 입력해 주세요" required></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <span class="form-label">대표 이미지</span>
+            <div class="form-body">
+                <p class="attachment-hint">이미지 1장만 첨부할 수 있어요 (jpg, jpeg, png / 10MB 이하)</p>
+                <div id="imageSlot"></div>
+            </div>
+        </div>
+
+        <div class="form-footer">
+            <a th:href="@{/feed}" class="btn-secondary">취소</a>
+            <button type="submit" class="btn-primary">등록</button>
+        </div>
+    </form>
+
+</div>
+
+<script th:inline="none">
+    var MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
+    var ALLOWED_IMAGE_EXT = ['jpg', 'jpeg', 'png'];
+
+    var newImage = null; // { file, name, status: 'uploading'|'done'|'error', attachmentId }
+
+    var imageSlot = document.getElementById('imageSlot');
+
+    function getExtension(fileName) {
+        var idx = fileName.lastIndexOf('.');
+        if (idx === -1) {
+            return '';
+        }
+        return fileName.slice(idx + 1).toLowerCase();
+    }
+
+    function uploadImage() {
+        var formData = new FormData();
+        formData.append('file', newImage.file);
+
+        fetch('/attachment', {
+            method: 'POST',
+            body: formData
+        }).then(function (res) {
+            if (!res.ok) {
+                throw new Error('업로드 실패');
+            }
+            return res.json();
+        }).then(function (data) {
+            newImage.status = 'done';
+            newImage.attachmentId = data.id;
+            renderImageSlot();
+        }).catch(function () {
+            newImage.status = 'error';
+            renderImageSlot();
+        });
+    }
+
+    function handleFileSelected(file) {
+        var ext = getExtension(file.name);
+        newImage = {
+            file: file,
+            name: file.name,
+            status: 'uploading',
+            attachmentId: null
+        };
+
+        if (ALLOWED_IMAGE_EXT.indexOf(ext) === -1 || file.size > MAX_IMAGE_SIZE) {
+            newImage.status = 'error';
+            renderImageSlot();
+            return;
+        }
+
+        renderImageSlot();
+        uploadImage();
+    }
+
+    function renderImageSlot() {
+        imageSlot.innerHTML = '';
+
+        if (newImage) {
+            var row = document.createElement('div');
+            row.className = 'attachment-slot filled';
+
+            var nameSpan = document.createElement('span');
+            nameSpan.className = 'attachment-name';
+            nameSpan.textContent = newImage.name;
+            row.appendChild(nameSpan);
+
+            var statusSpan = document.createElement('span');
+            statusSpan.className = 'attachment-status ' + newImage.status;
+            statusSpan.textContent =
+                newImage.status === 'uploading' ? '업로드 중' :
+                newImage.status === 'done' ? '완료' : '실패';
+            row.appendChild(statusSpan);
+
+            var removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'attachment-remove';
+            removeBtn.textContent = '✕';
+            removeBtn.addEventListener('click', function () {
+                newImage = null;
+                renderImageSlot();
+            });
+            row.appendChild(removeBtn);
+
+            imageSlot.appendChild(row);
+            return;
+        }
+
+        var label = document.createElement('label');
+        label.className = 'attachment-slot-picker';
+
+        var input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.jpg,.jpeg,.png';
+        input.addEventListener('change', function () {
+            if (input.files[0]) {
+                handleFileSelected(input.files[0]);
+            }
+        });
+
+        var labelText = document.createElement('span');
+        labelText.textContent = '파일 선택';
+
+        label.appendChild(input);
+        label.appendChild(labelText);
+        imageSlot.appendChild(label);
+    }
+
+    renderImageSlot();
+
+    document.getElementById('createForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        var author = document.getElementById('author').value.trim();
+        var password = document.getElementById('password').value;
+        var title = document.getElementById('title').value.trim();
+        var content = document.getElementById('content').value.trim();
+
+        if (author.length === 0) {
+            alert('작성자명을 입력해 주세요.');
+            return;
+        }
+        if (!/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,20}$/.test(password)) {
+            alert('비밀번호는 영문, 숫자, 특수문자(@$!%*#?&)를 포함해 8~20자로 입력해 주세요.');
+            return;
+        }
+        if (title.length === 0) {
+            alert('제목을 입력해 주세요.');
+            return;
+        }
+        if (content.length === 0) {
+            alert('내용을 입력해 주세요.');
+            return;
+        }
+        if (newImage && newImage.status === 'uploading') {
+            alert('이미지 업로드가 끝난 후 등록해 주세요.');
+            return;
+        }
+
+        var imageId = (newImage && newImage.status === 'done') ? newImage.attachmentId : null;
+
+        fetch('/feed', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                author: author,
+                password: password,
+                title: title,
+                content: content,
+                imageId: imageId
+            })
+        }).then(function (res) {
+            if (res.ok) {
+                res.json().then(function (data) {
+                    window.location.href = '/feed/' + data.boardId;
+                }).catch(function () {
+                    window.location.href = '/feed';
+                });
+            } else {
+                alert('등록에 실패했습니다.');
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

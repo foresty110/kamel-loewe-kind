@@ -2,6 +2,7 @@ package com.kamel.board.service;
 
 import com.kamel.board.dto.BoardListResponseDto;
 import com.kamel.board.entity.Board;
+import com.kamel.board.entity.BoardType;
 import com.kamel.board.mapper.BoardMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,7 +40,7 @@ public class BoardService {
      * @param limit     조회할 최대 게시글 수
      * @return 게시글 목록
      */
-    public List<Board> getListByType(String boardType, int limit) {
+    public List<Board> getListByType(BoardType boardType, int limit) {
         return boardMapper.findAllByBoardType(boardType, limit);
     }
 
@@ -65,18 +66,17 @@ public class BoardService {
      * 전달받은 정보로 게시글을 생성한다.
      *
      * @param board         생성할 게시글 정보
-     * @param attachmentIds
+     * @param attachmentIds 게시글과 연결할 첨부파일 번호 목록
      * @return 생성한 게시글
      * @throws IllegalArgumentException 존재하지 않는 카테고리 번호인 경우
      */
     @Transactional
     public Board create(Board board, List<Long> attachmentIds) {
 
-        //카데고리 존재 여부 확인
-        categoryService.validateExists(board.getCategoryId());
-
-        // 게시판 타입 설정 (현재는 자유게시판 등록만 지원)
-        board.setBoardType("GENERAL");
+        //카테고리가 있는 게시판이면 존재 여부 확인
+        if (board.getCategoryId() != null) {
+            categoryService.validateExists(board.getCategoryId());
+        }
 
         // 비밀번호 암호화
         board.setPassword(passwordEncoder.encode(board.getPassword()));

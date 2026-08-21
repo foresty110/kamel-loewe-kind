@@ -2,6 +2,7 @@ package com.kamel.board.mapper;
 
 import com.kamel.board.dto.BoardListResponseDto;
 import com.kamel.board.entity.Board;
+import com.kamel.board.entity.BoardType;
 import com.kamel.board.service.BoardSearchCondition;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -36,7 +37,7 @@ public interface BoardMapper {
      * @param limit     조회할 최대 게시글 수
      * @return 게시글 목록
      */
-    List<Board> findAllByBoardType(String boardType,int limit);
+    List<Board> findAllByBoardType(BoardType boardType, int limit);
 
     /**
      * 게시글 상세 정보를 조회한다.

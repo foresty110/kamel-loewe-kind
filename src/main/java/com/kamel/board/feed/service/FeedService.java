@@ -1,6 +1,7 @@
 package com.kamel.board.feed.service;
 
 import com.kamel.board.entity.Board;
+import com.kamel.board.entity.BoardType;
 import com.kamel.board.entity.Comment;
 import com.kamel.board.feed.dto.FeedDetailResponseDto;
 import com.kamel.board.feed.dto.FeedEditResponseDto;
@@ -13,6 +14,7 @@ import com.kamel.board.service.BoardService;
 import com.kamel.board.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,13 +26,35 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FeedService {
 
-    private static final String BOARD_TYPE = "FEED"; // 피드 게시판 타입
+    private static final BoardType BOARD_TYPE = BoardType.FEED; // 피드 게시판 타입
     private static final int PAGE_SIZE = 20; // 한 번에 불러오는 피드 개수
 
     private final FeedMapper feedMapper; // 피드 매퍼
     private final BoardService boardService; // 게시글 서비스
     private final CommentService commentService; // 댓글 서비스
     private final AttachmentService attachmentService; // 첨부파일 서비스
+
+    /**
+     * 새 피드 게시글을 등록한다.
+     *
+     * @param board   등록할 데이터를 담은 게시글 정보
+     * @param imageId 대표 이미지로 연결할 첨부파일 번호
+     * @return 등록된 게시글 정보
+     */
+    @Transactional
+    public Board create(Board board, Long imageId) {
+
+        // 대표 이미지 하나를 boardService.create가 요구하는 목록 형태로 변환
+        List<Long> imageIds = imageId != null ? List.of(imageId) : List.of();
+
+        // 게시글 기본 정보 등록
+        Board createdBoard = boardService.create(board, imageIds);
+
+        // 피드 부가 정보 등록
+        feedMapper.insert(createdBoard.getId());
+
+        return createdBoard;
+    }
 
     /**
      * 최신순으로 피드 목록을 조회한다.

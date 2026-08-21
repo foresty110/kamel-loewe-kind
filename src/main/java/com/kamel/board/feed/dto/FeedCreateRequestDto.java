@@ -1,23 +1,19 @@
-package com.kamel.board.dto;
+package com.kamel.board.feed.dto;
 
 import com.kamel.board.entity.Board;
 import com.kamel.board.entity.BoardType;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.List;
-
 /**
- * 새로 만들 게시글의 정보를 담은 요청 DTO
+ * 새로 만들 피드 게시글의 정보를 담은 요청 DTO
  */
 @Getter
 @Builder
-public class BoardCreateRequestDto {
-
-    @NotNull(message = "카테고리 ID는 필수 값입니다.")
-    @Positive(message = "잘못된 카테고리 ID입니다.")
-    private Long categoryId; // 카테고리 ID
+public class FeedCreateRequestDto {
 
     @NotBlank(message = "작성자명을 입력해주세요.")
     @Size(max = 20, message = "작성자명은 20자 이하로 입력해주세요.")
@@ -31,13 +27,13 @@ public class BoardCreateRequestDto {
     private String password; // 비밀번호
 
     @NotBlank(message = "제목을 입력해주세요.")
-    @Size(max = 200, message = "제목을 200자 이하로 입력해주세요.")
+    @Size(max = 200, message = "제목은 200자 이하로 입력해주세요.")
     private String title; // 제목
 
     @NotBlank(message = "내용을 입력해주세요.")
     private String content; // 내용
 
-    private List<Long> attachmentIds; //첨부파일 목록
+    private Long imageId; // 대표 이미지로 연결할 첨부파일 번호
 
     /**
      * 이 요청 DTO를 {@link Board} 엔티티로 변환한다.
@@ -46,12 +42,11 @@ public class BoardCreateRequestDto {
      */
     public Board toEntity() {
         return Board.builder()
-                .boardType(BoardType.GENERAL)
-                .categoryId(this.getCategoryId())
-                .author(this.getAuthor())
-                .password(this.getPassword())
-                .title(this.getTitle())
-                .content(this.getContent())
+                .boardType(BoardType.FEED)
+                .author(this.author)
+                .password(this.password)
+                .title(this.title)
+                .content(this.content)
                 .build();
     }
 }
